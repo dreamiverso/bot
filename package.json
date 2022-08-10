@@ -7,7 +7,7 @@
   "description": "El bot oficial del Dreamiverso",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsnd --respawn --quiet src/index.ts",
+    "dev": "cross-env NODE_ENV=development tsnd -r tsconfig-paths/register --respawn --quiet src/index.ts",
     "build": "tsc",
     "start": "cross-env NODE_ENV=production node ."
   },
@@ -26,6 +26,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.1.0",
     "typescript": "^4.7.4"
   },
   "engines": {
