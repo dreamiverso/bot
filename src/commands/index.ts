@@ -1,7 +1,6 @@
 import fs from "fs"
 import path from "path"
-import { REST } from "@discordjs/rest"
-import { Routes } from "discord-api-types/rest/v9"
+import { REST, Routes } from "discord.js"
 
 import { env } from "~/utils"
 
