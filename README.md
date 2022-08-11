@@ -16,7 +16,7 @@ El proyecto requiere un archivo `.env` ubicado en la raíz del proyecto para fun
 
 Utilizamos `zod` para asegurar que las variables de entorno existen y tienen un formato correcto. Preferimos esto a declarar las variables de entorno en un archivo `.d.ts` porque `zod` devuelve valores type-safe, así tenemos declaración y validación en un mismo sitio.
 
-```tsx
+```ts
 // ⛔ Evita usar `process.env`
 process.env.DISCORD_BOT_TOKEN // string | undefined
 process.env.THIS_DOESNT_EXIST // string | undefined
