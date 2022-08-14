@@ -1,7 +1,8 @@
+import { Message } from "discord.js"
 import { Window } from "happy-dom"
 
-import { FeatureHandler } from "~/types"
 import { id, env, getAllChannelMessages } from "~/utils"
+import { FeatureHandler } from "~/types"
 
 const keywords = [
   "ps",
@@ -82,28 +83,28 @@ async function getLevelAndAura(id: string) {
   }
 }
 
+async function handleMessage(message: Message) {
+  const id = getPlayStationId(message.content)
+
+  console.log(`found ${id}, will scrape indreams on production`)
+
+  if (id && env.NODE_ENV === "production") {
+    const { level, mainAura } = await getLevelAndAura(id)
+    console.log({ id, level, mainAura })
+  }
+}
+
 export const ready: FeatureHandler<"ready"> = async (client) => {
   const messages = await getAllChannelMessages({
     client,
     id: id.channel.nicknames,
   })
 
-  if (!messages.length) return
-
-  for (const message of messages) {
-    const id = getPlayStationId(message.content)
-
-    if (id && env.NODE_ENV === "production") {
-      console.log(`found ${id}, trying to scrape indreams`)
-      const { level, mainAura } = await getLevelAndAura(id)
-      console.log({ id, level, mainAura })
-    }
-  }
+  if (messages.length) messages.forEach(handleMessage)
 }
 
 export const messageCreate: FeatureHandler<"messageCreate"> = async (
   message
 ) => {
-  if (message.channel.id !== id.channel.nicknames) return
-  console.log(message.content)
+  if (message.channel.id === id.channel.nicknames) handleMessage(message)
 }
