@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits } from "discord.js"
 
 import Commands from "~/commands"
-import Handlers from "~/handlers"
+import Features from "~/features"
 import { env } from "~/utils"
 
 const client = new Client({
@@ -14,8 +14,8 @@ const client = new Client({
   ],
 })
 
-const handlers = new Handlers()
-handlers.init(client)
+const features = new Features()
+features.init(client)
 
 const commands = new Commands()
 commands.init(client)

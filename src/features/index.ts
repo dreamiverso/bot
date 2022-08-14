@@ -5,44 +5,44 @@ import { Client } from "discord.js"
 /**
  * Simplified `Handler` type as apparently TS suffers using the real one here
  */
-type Handler = (...args: unknown[]) => Promise<void>
+type FeatureHandler = (...args: unknown[]) => Promise<void>
 
-class Handlers {
-  public list: Record<string, Handler[]> = {}
+class Features {
+  public list: Record<string, FeatureHandler[]> = {}
 
   public async init(client: Client<false>) {
     const dirents = await fs.promises.readdir(__dirname, {
       withFileTypes: true,
     })
 
-    const handlerFiles = dirents.filter(
+    const featureFiles = dirents.filter(
       (dirent) =>
         dirent.isFile() &&
         dirent.name.endsWith(".ts") &&
         dirent.name !== path.basename(__filename)
     )
 
-    for (const file of handlerFiles) {
+    for (const file of featureFiles) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const handlers: Record<string, Handler> = require(`./${file.name}`)
+      const features: Record<string, FeatureHandler> = require(`./${file.name}`)
 
       // TODO: validate with zod
 
-      Object.entries(handlers).forEach(([event, handler]) => {
+      Object.entries(features).forEach(([event, feature]) => {
         if (event in this.list) {
-          this.list[event].push(handler)
+          this.list[event].push(feature)
         } else {
-          this.list[event] = [handler]
+          this.list[event] = [feature]
         }
       })
     }
 
-    for (const [event, handlers] of Object.entries(this.list)) {
+    for (const [event, features] of Object.entries(this.list)) {
       client.on(event, (...args) => {
-        handlers.forEach((handler) => handler(...args))
+        features.forEach((handler) => handler(...args))
       })
     }
   }
 }
 
-export default Handlers
+export default Features

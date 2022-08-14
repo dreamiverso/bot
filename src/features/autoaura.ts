@@ -1,6 +1,6 @@
 import { Window } from "happy-dom"
 
-import { Handler } from "~/types"
+import { FeatureHandler } from "~/types"
 import { id, env, getAllChannelMessages } from "~/utils"
 
 const keywords = [
@@ -82,7 +82,7 @@ async function getLevelAndAura(id: string) {
   }
 }
 
-export const ready: Handler<"ready"> = async (client) => {
+export const ready: FeatureHandler<"ready"> = async (client) => {
   const messages = await getAllChannelMessages({
     client,
     id: id.channel.nicknames,
@@ -101,7 +101,9 @@ export const ready: Handler<"ready"> = async (client) => {
   }
 }
 
-export const messageCreate: Handler<"messageCreate"> = async (message) => {
+export const messageCreate: FeatureHandler<"messageCreate"> = async (
+  message
+) => {
   if (message.channel.id !== id.channel.nicknames) return
   console.log(message.content)
 }

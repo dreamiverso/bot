@@ -6,9 +6,9 @@ import {
 } from "discord.js"
 
 /**
- * Any exported function from `src/handlers/*.ts` files
+ * Any exported function from `src/features/*.ts` files
  */
-export type Handler<T extends keyof ClientEvents> = (
+export type FeatureHandler<T extends keyof ClientEvents> = (
   ...args: ClientEvents[T]
 ) => Promise<void>
 
