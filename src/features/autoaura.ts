@@ -1,8 +1,8 @@
 import { Message } from "discord.js"
 import { Window } from "happy-dom"
 
-import { id, env, getAllChannelMessages } from "~/utils"
 import { FeatureHandler } from "~/types"
+import { id, cron } from "~/utils"
 
 const keywords = [
   "ps",
@@ -57,7 +57,7 @@ const removeNoiseWords = new RegExp(
   "gi"
 )
 
-function getPlayStationId(text: string) {
+function findPlayStationId(text: string) {
   const [match] =
     text
       .replace(stripBrackets, "")
@@ -75,38 +75,42 @@ async function getLevelAndAura(id: string) {
   window.document.body.innerHTML = data
 
   const level = window.document.querySelector(".profile__level")
-  const mainAura = window.document.querySelectorAll(".persona")[1]
+  const aura = window.document.querySelectorAll(".persona")[1]
 
   return {
     level: level.textContent,
-    mainAura: mainAura.textContent,
+    aura: aura.textContent,
   }
 }
 
 async function handleMessage(message: Message) {
-  const id = getPlayStationId(message.content)
+  const id = findPlayStationId(message.content)
 
-  console.log(`found ${id}, will scrape indreams on production`)
+  if (!id) return
 
-  if (id && env.NODE_ENV === "production") {
-    const { level, mainAura } = await getLevelAndAura(id)
-    console.log({ id, level, mainAura })
-  }
+  const levelAndAura = await getLevelAndAura(id)
+  return { id, ...levelAndAura }
 }
 
-export const ready: FeatureHandler<"ready"> = async (client) => {
-  const messages = await getAllChannelMessages({
-    client,
-    id: id.channel.nicknames,
-  })
-
-  if (messages.length) messages.forEach(handleMessage)
-}
-
+/**
+ * Tries to get the PlayStation Network id on each new message in the nicknames channel.
+ * Starts the autoaura subscription flow.
+ */
 export const messageCreate: FeatureHandler<"messageCreate"> = async (
   message
 ) => {
   if (message.author.bot) return
   if (message.channel.id !== id.channel.nicknames) return
-  handleMessage(message)
+
+  const result = handleMessage(message)
+  console.log("autoaura subscription flow scrape result", result)
+}
+
+/**
+ * Creates a cron job that updates all existing autoaura subscriptions.
+ */
+export const ready: FeatureHandler<"ready"> = async () => {
+  cron("0 * * * *", () => {
+    console.log("update autoaura subscriptions")
+  })
 }
