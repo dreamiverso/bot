@@ -1,8 +1,27 @@
-import { Client, Message } from "discord.js"
+import {
+  CacheType,
+  ClientEvents,
+  CommandInteraction,
+  SlashCommandBuilder,
+} from "discord.js"
 
-export type FeatureMessageHandler = (args: {
-  client: Client<true>
-  message: Message<boolean>
-}) => Promise<void>
+/**
+ * Any exported function from `src/handlers/*.ts` files
+ */
+export type Handler<T extends keyof ClientEvents> = (
+  ...args: ClientEvents[T]
+) => Promise<void>
 
-export type ConnectHandler = (args: { client: Client<true> }) => Promise<void>
+/**
+ * The exported `builder` function from `src/commands/*.ts` files
+ */
+export type CommandBuilderFunction = (
+  builder: SlashCommandBuilder
+) => Promise<SlashCommandBuilder>
+
+/**
+ * The exported `execute` function from `src/commands/*.ts` files
+ */
+export type CommandHandlerFunction = (
+  interaction: CommandInteraction<CacheType>
+) => Promise<void>

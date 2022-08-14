@@ -1,8 +1,8 @@
 import { Client, GatewayIntentBits } from "discord.js"
 
-import { env } from "~/utils"
-
 import Commands from "~/commands"
+import Handlers from "~/handlers"
+import { env } from "~/utils"
 
 const client = new Client({
   intents: [
@@ -14,30 +14,14 @@ const client = new Client({
   ],
 })
 
-const commands = new Commands()
+const handlers = new Handlers()
+handlers.init(client)
 
-commands.sync()
+const commands = new Commands()
+commands.init(client)
 
 client.once("ready", async () => {
   console.log("client is ready", env.NODE_ENV)
-})
-
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isChatInputCommand()) return
-
-  const command = commands.list.find(
-    (command) => command.builder.name === interaction.commandName
-  )
-
-  if (command) {
-    await command.execute(interaction)
-  } else {
-    await interaction.reply("Ese comando no existe!")
-  }
-})
-
-client.on("messageCreate", (message) => {
-  if (message.author.bot) return
 })
 
 client.login(env.DISCORD_BOT_TOKEN)

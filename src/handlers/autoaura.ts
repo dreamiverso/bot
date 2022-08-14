@@ -1,6 +1,6 @@
 import { Window } from "happy-dom"
 
-import { ConnectHandler, FeatureMessageHandler } from "~/types"
+import { Handler } from "~/types"
 import { id, env, getAllChannelMessages } from "~/utils"
 
 const keywords = [
@@ -23,7 +23,7 @@ const keywords = [
   "pipastation4",
   "playstation5",
   "pipastation5",
-]
+] as const
 
 const window = new Window()
 
@@ -82,7 +82,7 @@ async function getLevelAndAura(id: string) {
   }
 }
 
-export const onConnect: ConnectHandler = async ({ client }) => {
+export const ready: Handler<"ready"> = async (client) => {
   const messages = await getAllChannelMessages({
     client,
     id: id.channel.nicknames,
@@ -101,7 +101,7 @@ export const onConnect: ConnectHandler = async ({ client }) => {
   }
 }
 
-export const onMessage: FeatureMessageHandler = async ({ message }) => {
+export const messageCreate: Handler<"messageCreate"> = async (message) => {
   if (message.channel.id !== id.channel.nicknames) return
   console.log(message.content)
 }
