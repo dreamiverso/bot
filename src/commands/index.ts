@@ -3,16 +3,16 @@ import path from "path"
 import { Client, Routes, REST, SlashCommandBuilder } from "discord.js"
 
 import { env } from "~/utils"
-import { CommandBuilderFunction, CommandHandlerFunction } from "~/types"
+import { CommandBuilder, CommandHandler } from "~/types"
 
 type CommandFileExports = {
-  builder: CommandBuilderFunction
-  handler: CommandHandlerFunction
+  builder: CommandBuilder
+  handler: CommandHandler
 }
 
 type CommandWithResolvedBuilder = {
   builder: SlashCommandBuilder
-  handler: CommandHandlerFunction
+  handler: CommandHandler
 }
 
 class Commands {

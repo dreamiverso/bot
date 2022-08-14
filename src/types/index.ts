@@ -15,13 +15,13 @@ export type FeatureHandler<T extends keyof ClientEvents> = (
 /**
  * The exported `builder` function from `src/commands/*.ts` files
  */
-export type CommandBuilderFunction = (
+export type CommandBuilder = (
   builder: SlashCommandBuilder
 ) => Promise<SlashCommandBuilder>
 
 /**
  * The exported `execute` function from `src/commands/*.ts` files
  */
-export type CommandHandlerFunction = (
+export type CommandHandler = (
   interaction: CommandInteraction<CacheType>
 ) => Promise<void>
