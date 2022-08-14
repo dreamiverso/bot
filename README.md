@@ -107,30 +107,33 @@ Cada archivo puede exportar varias funciones asíncronas que se integran con los
 ```ts
 import type { FeatureHandler } from "~/types"
 
-export const ready: FeatureHandler<"ready"> = async (ctx) => {
+export const ready: FeatureHandler<"ready"> = async (...context) => {
   // Se invoca en client.on("ready")
 }
 
-export const messageCreate: FeatureHandler<"messageCreate"> = async (ctx) => {
+export const messageCreate: FeatureHandler<"messageCreate"> = async (...context) => {
   // Se invoca en client.on("messageCreate")
 }
 
-export const messageDelete: FeatureHandler<"messageDelete"> = async (ctx) => {
+export const messageDelete: FeatureHandler<"messageDelete"> = async (...context) => {
   // Se invoca en client.on("messageDelete")
 }
 ```
 
 > El nombre de las funciones debe coincidir con al menos uno de los eventos del cliente de Discord.
-> Puedes consultarlos aquí TODO
+> Puedes consultarlos en la [documentación de `discord.js`](https://discord.js.org/#/docs/main/stable/class/Client)
 
-> El argumento `ctx` es un objeto cuyas propiedades dependen del tipo de evento.
-> Para obtener los tipos correctos, asegúrate de que el tipo `FeatureHandler`
-> recibe como genérico el nombre del evento.
+> Los argumentos de cada función dependen del tipo de evento.
+> Para obtener los tipos correctos, asegúrate de que el tipo `FeatureHandler` recibe como genérico el nombre del evento.
 
 
 ### Directorio `types`
 
-TODO: Documentar
+Un barrel export con tipos que pueden ser usados por cualquier otro archivo del proyecto.
+
+```ts
+import { CommandBuilder, CommandHandler } from "~/types"
+```
 
 ### Directorio `utils`
 
@@ -158,6 +161,7 @@ Utilizamos `zod`, entre otras cosas, para asegurar que las variables de entorno 
 // ⛔ Evita usar `process.env`
 process.env.DISCORD_BOT_TOKEN // string | undefined
 process.env.THIS_DOESNT_EXIST // string | undefined
+
 // ✅ Mejor importa y utiliza el objeto `env`
 import { env } from "~/utils"
 env.DISCORD_BOT_TOKEN // string

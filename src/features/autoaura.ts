@@ -106,5 +106,7 @@ export const ready: FeatureHandler<"ready"> = async (client) => {
 export const messageCreate: FeatureHandler<"messageCreate"> = async (
   message
 ) => {
-  if (message.channel.id === id.channel.nicknames) handleMessage(message)
+  if (message.author.bot) return
+  if (message.channel.id !== id.channel.nicknames) return
+  handleMessage(message)
 }
