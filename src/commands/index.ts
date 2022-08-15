@@ -59,7 +59,13 @@ class Commands {
         (command) => command.builder.name === interaction.commandName
       )
 
-      if (command) command.handler(interaction)
+      if (!command) return
+
+      try {
+        command.handler(interaction)
+      } catch (error) {
+        console.warn(`Error on command ${command.builder.name}: ${error}`)
+      }
     })
   }
 }

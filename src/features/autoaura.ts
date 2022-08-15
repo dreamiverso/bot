@@ -1,8 +1,7 @@
-import { Message } from "discord.js"
 import { Window } from "happy-dom"
 
 import { FeatureHandler } from "~/types"
-import { id, cron } from "~/utils"
+import { cron, db, CHANNEL_ID, AUTOAURA_SUBSCRIPTION_STATE } from "~/utils"
 
 const keywords = [
   "ps",
@@ -68,49 +67,91 @@ function findPlayStationId(text: string) {
   return match
 }
 
-async function getLevelAndAura(id: string) {
+async function getLevelAndAuras(id: string) {
   const response = await fetch(`https://indreams.me/${id}`)
   const data = await response.text()
 
   window.document.body.innerHTML = data
 
-  const level = window.document.querySelector(".profile__level")
-  const aura = window.document.querySelectorAll(".persona")[1]
+  const [level, ...auras] = window.document.querySelectorAll(".persona")
 
   return {
     level: level.textContent,
-    aura: aura.textContent,
+    auras: auras.map((aura) => aura.textContent),
   }
-}
-
-async function handleMessage(message: Message) {
-  const id = findPlayStationId(message.content)
-
-  if (!id) return
-
-  const levelAndAura = await getLevelAndAura(id)
-  return { id, ...levelAndAura }
 }
 
 /**
  * Tries to get the PlayStation Network id on each new message in the nicknames channel.
- * Starts the autoaura subscription flow.
+ * Automatically starts the autoaura enrollment funnel for new users.
+ * Skips users who already went through the funnel.
  */
 export const messageCreate: FeatureHandler<"messageCreate"> = async (
   message
 ) => {
   if (message.author.bot) return
-  if (message.channel.id !== id.channel.nicknames) return
+  if (message.channel.id !== CHANNEL_ID.NICKNAMES) return
 
-  const result = handleMessage(message)
-  console.log("autoaura subscription flow scrape result", result)
+  const id = findPlayStationId(message.content)
+
+  // Could not get a valid PSN id from the message.
+  // Maybe we can check if the user is endolled and ask they for their PSN id instead of aborting
+  if (!id) return
+
+  const existingUser = await db.user.findUnique({
+    where: {
+      idDiscord: message.author.id,
+    },
+  })
+
+  // User is already subscribed, exit process
+  if (existingUser?.autoaura) return
+
+  // TODO ask for consent
+  // Here we assume user wants to endoll to autoaura
+  const consents = true
+
+  const levelAurasPromise = getLevelAndAuras(id)
+
+  const createUserPromise = db.user.create({
+    data: {
+      idDiscord: message.author.id,
+      idPSN: id,
+      autoaura: consents
+        ? AUTOAURA_SUBSCRIPTION_STATE.ENROLLED
+        : AUTOAURA_SUBSCRIPTION_STATE.DECLINED,
+    },
+  })
+
+  const [levelAndAuras] = await Promise.all([
+    levelAurasPromise,
+    createUserPromise,
+  ])
+
+  // TODO: assign role based on this values
+  console.log("autoaura subscription flow scrape result", levelAndAuras)
 }
 
 /**
  * Creates a cron job that updates all existing autoaura subscriptions.
  */
 export const ready: FeatureHandler<"ready"> = async () => {
-  cron("0 * * * *", () => {
-    console.log("update autoaura subscriptions")
+  cron("0 * * * *", async () => {
+    console.log("updating all autoaura subscriptions every hour")
+
+    const endolledUsers = await db.user.findMany({
+      where: {
+        autoaura: {
+          not: null,
+        },
+      },
+    })
+
+    endolledUsers.forEach(async (user) => {
+      const { level, auras } = await getLevelAndAuras(user.idPSN)
+
+      // TODO: assign role based on this values
+      console.log(`will update user ${user} with new scrape data`, level, auras)
+    })
   })
 }

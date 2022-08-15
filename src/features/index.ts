@@ -39,7 +39,13 @@ class Features {
 
     for (const [event, features] of Object.entries(this.list)) {
       client.on(event, (...args) => {
-        features.forEach((handler) => handler(...args))
+        features.forEach((handler) => {
+          try {
+            handler(...args)
+          } catch (error) {
+            console.warn(`Error on ${event} handler ${handler.name}: ${error}`)
+          }
+        })
       })
     }
   }

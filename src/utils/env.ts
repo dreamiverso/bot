@@ -5,6 +5,7 @@ config()
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "production"]),
+  DATABASE_URL: z.string().min(1),
   /**
    * Usually referred to as `token` on Discord documentation
    */

@@ -1,5 +1,6 @@
 import { Client, Message } from "discord.js"
-import { ChannelId } from "./constants"
+
+import { CHANNEL_ID } from "./constants"
 
 /**
  * Gets all messages from a text channel.
@@ -9,7 +10,7 @@ export async function getAllChannelMessages({
   id,
 }: {
   client: Client<true>
-  id: ChannelId
+  id: CHANNEL_ID
 }) {
   const channel =
     client.channels.cache.get(id) ?? (await client.channels.fetch(id))

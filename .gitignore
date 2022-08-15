@@ -12,7 +12,7 @@ yarn-error.log*
 
 # Env files
 .env
-.env.*
+*.env.*
 !.env.template
 
 # Generated

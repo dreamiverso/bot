@@ -2,6 +2,13 @@
 
 El código fuente del bot del [servidor de Discord del Dreamiverso](https://discord.dreamiverso.me/).
 
+## Stack
+
+- `node`
+- `typescript`
+- `prisma`
+- `heroku`
+
 ## Comandos
 
 | Comando   | Desscripción                                           |
@@ -23,19 +30,25 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
   node -v
 ```
 
-2. Crea un archivo `.env` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
+2. Instala `postgres` y crea un servidor local con una base de datos vacía. Puedes seguir [esta guía](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup). Cada vez que hagas cambios en el `schema`, tendrás que ejecutar el siguiente comando:
+
+```zsh
+  yarn prisma generate
+```
+
+3. Crea un archivo `.env` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
 
 ```zsh
   touch .env
 ```
 
-3. Instala las dependencias.
+4. Instala las dependencias.
 
 ```zsh
   npm install
 ```
 
-4. Inicia el proyecto en el entorno de desarrollo.
+5. Inicia el proyecto en el entorno de desarrollo.
 
 ```zsh
   npm run dev
@@ -56,12 +69,12 @@ src
 ├── commands
 │   ├── {command}.ts
 │   └── index.ts
+├── db
 ├── features
 │   ├── {feature}.ts
 │   └── index.ts
 ├── types
-├── utils
-└── index.ts
+└── utils
 ```
 
 ### Directorio `commands`
@@ -92,6 +105,10 @@ export const handler: CommandHandler = async (interaction) => {
 }
 ```
 
+### Directorio `db`
+
+Este proyecto utiliza `prisma` para interactuar con una base de datos `postgres`. `db` contiene el `schema` y las `migrations` de `prisma`.
+
 ### Directorio `features`
 
 Un sistema basado en archivos para integrar funcionalidades que dependen de eventos del cliente de Discord. Cada archivo dentro del directorio encapsula una funcionalidad y puede depender de varios eventos.
@@ -107,15 +124,15 @@ Cada archivo puede exportar varias funciones asíncronas que se integran con los
 ```ts
 import type { FeatureHandler } from "~/types"
 
-export const ready: FeatureHandler<"ready"> = async (...context) => {
-  // Se invoca en client.on("ready")
-}
-
-export const messageCreate: FeatureHandler<"messageCreate"> = async (...context) => {
+export const messageCreate: FeatureHandler<"messageCreate"> = async (
+  context
+) => {
   // Se invoca en client.on("messageCreate")
 }
 
-export const messageDelete: FeatureHandler<"messageDelete"> = async (...context) => {
+export const messageDelete: FeatureHandler<"messageDelete"> = async (
+  context
+) => {
   // Se invoca en client.on("messageDelete")
 }
 ```
@@ -125,7 +142,6 @@ export const messageDelete: FeatureHandler<"messageDelete"> = async (...context)
 
 > Los argumentos de cada función dependen del tipo de evento.
 > Para obtener los tipos correctos, asegúrate de que el tipo `FeatureHandler` recibe como genérico el nombre del evento.
-
 
 ### Directorio `types`
 
@@ -149,6 +165,7 @@ El proyecto requiere un archivo `.env` ubicado en la raíz del proyecto para fun
 
 | Variable                 |  Valor   | Descripción                                                                                                                                                                                                                                                                                    |
 | ------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`           | `string` | TODO. Si necesitas este token ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me)                                                                                                                                                                   |
 | `DISCORD_BOT_TOKEN`      | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `Bot > Token`. Si necesitas este token ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me) |
 | `DISCORD_APPLICATION_ID` | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `General Information > Application ID`                                                                                                |
 | `DISCORD_SERVER_ID`      | `string` | Se obtiene desde la aplicación de Discord. Necesitarás activar el modo desarrollador en `Ajustes de usuario > Avanzado > Modo desarrollador`. Luego, haz click derecho en el nombre del servidor y selecciona `Copiar ID`.                                                                     |

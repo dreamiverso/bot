@@ -1,9 +1,8 @@
-export const id = {
-  channel: {
-    nicknames: "1007016335261315213",
-  },
-} as const
+export enum CHANNEL_ID {
+  NICKNAMES = "1007016335261315213",
+}
 
-type Id = typeof id
-
-export type ChannelId = Id["channel"][keyof Id["channel"]]
+export enum AUTOAURA_SUBSCRIPTION_STATE {
+  ENROLLED = "ENROLLED",
+  DECLINED = "DECLINED",
+}
