@@ -6,22 +6,24 @@ import {
 } from "discord.js"
 
 /**
- * Any exported function from `src/features/*.ts` files
+ * An event handler from feature files
  */
-export type FeatureHandler<T extends keyof ClientEvents> = (
+export type Handler<T extends keyof ClientEvents> = (
   ...args: ClientEvents[T]
 ) => Promise<void>
 
-/**
- * The exported `builder` function from `src/commands/*.ts` files
- */
 export type CommandBuilder = (
   builder: SlashCommandBuilder
 ) => Promise<SlashCommandBuilder>
 
-/**
- * The exported `execute` function from `src/commands/*.ts` files
- */
 export type CommandHandler = (
   interaction: CommandInteraction<CacheType>
 ) => Promise<void>
+
+/**
+ * An exported command object from feature files
+ */
+export type Command = {
+  builder: CommandBuilder
+  handler: CommandHandler
+}

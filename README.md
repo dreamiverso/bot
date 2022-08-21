@@ -6,6 +6,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 
 - `node`
 - `typescript`
+- `postgresql`
 - `prisma`
 - `heroku`
 
@@ -16,6 +17,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 | `prepare` | Se ejecuta automáticamente. Configura `husky`.         |
 | `dev`     | Inicia el proyecto en modo desarrollo.                 |
 | `test`    | Ejecuta la suite de tests.                             |
+| `check`   | Muestra todos los errores de TypeScript.               |
 | `build`   | Crea una versión de producción para ejecutar en local. |
 | `start`   | Inicia una versión de producción generada previamente. |
 | `publish` | Crea y publica una nueva versión de producción.        |
@@ -62,86 +64,150 @@ Ejecuta el siguiente comando y sigue las indicaciones. El proceso de CI/CD ejecu
   npm run publish
 ```
 
+## Ramas y deployments
+
+Este proyecto consta de dos ramas principales:
+
+- `main` → Rama principal de desarrollo
+- `prod` → Rama de producción integrada en el proceso de CI/CD
+
 ## Estructura
 
 ```
 src
-├── commands
-│   ├── {command}.ts
-│   └── index.ts
 ├── db
 ├── features
-│   ├── {feature}.ts
-│   └── index.ts
+│   └── {feature}
+│       ├── (tests)
+│       ├── (types)
+│       ├── (utils)
+│       ├── (commands.ts)
+│       └── (handlers.ts)
+├── tests
 ├── types
 └── utils
-```
 
-### Directorio `commands`
-
-Un sistema basado en archivos para integrar `slash commands`. Cada archivo dentro del directorio encapsula un comando.
-
-```
-commands
-└── {command}.ts
-    ├── `export async builder`
-    └── `export async handler`
-```
-
-Cada archivo debe exportar dos funciones asíncronas para ser registrado correctamente:
-
-- `builder`: se resuelve al iniciar el bot y registra el resultado en la API de Discord.
-- `handler`: se invoca cuando se utiliza el comando.
-
-```ts
-import type { CommandBuilder, CommandHandler } from "~/types"
-
-export const builder: CommandBuilder = async (builder) => {
-  return builder.setName("name").setDescription("description")
-}
-
-export const handler: CommandHandler = async (interaction) => {
-  interaction.reply("Howdy!")
-}
+{} → Nombre arbitrario
+() → Opcional
 ```
 
 ### Directorio `db`
 
-Este proyecto utiliza `prisma` para interactuar con una base de datos `postgres`. `db` contiene el `schema` y las `migrations` de `prisma`.
+Este proyecto utiliza `prisma` para interactuar con una base de datos `postgresql`. `db` contiene el `schema` y `migrations` de `prisma`.
 
 ### Directorio `features`
 
-Un sistema basado en archivos para integrar funcionalidades que dependen de eventos del cliente de Discord. Cada archivo dentro del directorio encapsula una funcionalidad y puede depender de varios eventos.
+Un sistema basado en el `file system` de `node` para construir funcionalidades del bot. Cada subdirectorio encapsula una funcionalidad, que puede depender de comandos `slash` o de eventos del cliente de Discord.
+
+#### Estructura
+
+Un subdirectorio de funcionalidad debe contener al menos uno de los siguientes archivos:
+
+- `commands.ts` → Para registrar comandos `slash` de Discord
+- `handlers.ts` → Para responder a eventos del cliente de Discord
+
+El resto de archivos y directorios son arbitrarios. Puedes aprovechar esto para separar funcionalidades complejas en módulos más pequeños e importarlos en `commands.ts` o `handlers.ts`.
 
 ```
-features
-└── {feature}.ts
-    └── `export async {event}` → `client.on({event})`
+src
+└── features
+    └── {feature}
+        ├── (commands).ts
+        └── (handlers).ts
+
+{} → Nombre arbitrario
+() → Opcional
 ```
 
-Cada archivo puede exportar varias funciones asíncronas que se integran con los eventos del cliente de Discord. Cuando se recibe un evento, el listener correspondiente llama a todas las funciones asociadas a ese evento en paralelo.
+##### `commands.ts`
+
+Permite registrar comandos `slash` de Discord. Exporta una o varias funciones `createCommand` para registrar comandos nuevos. `createCommand` requiere dos funciones asíncronas:
+
+- `builder` → Se resuelve al iniciar el bot y registra el resultado en la API de Discord.
+- `handler` → Se invoca cuando se utiliza el comando.
 
 ```ts
-import type { FeatureHandler } from "~/types"
+// src/features/{feature}/commands.ts
+
+import { createCommand } from "~/utils"
+
+export const foo = createCommand({
+  async builder(builder) {
+    return builder.setName("foo")
+  }
+  async handler(interaction) {
+    await interaction.respond("bar")
+  }
+})
+
+export const baz = createCommand({
+  async builder(builder) {
+    return builder.setName("baz")
+  }
+  async handler(interaction) {
+    await interaction.respond("qux")
+  }
+})
+```
+
+##### `handlers.ts`
+
+Permite responder a eventos del cliente de Discord. Exporta una o varias funciones asíncronas con el nombre del evento que ejecutará la función. Puedes consultar la lista de eventos en la [documentación de `discord.js`](https://discord.js.org/#/docs/main/stable/class/Client).
+
+```ts
+// src/features/{feature}/handlers.ts
+
+import { FeatureHandler } from "~/types
 
 export const messageCreate: FeatureHandler<"messageCreate"> = async (
-  context
+  client
 ) => {
   // Se invoca en client.on("messageCreate")
 }
 
 export const messageDelete: FeatureHandler<"messageDelete"> = async (
-  context
+  client
 ) => {
   // Se invoca en client.on("messageDelete")
 }
 ```
 
-> El nombre de las funciones debe coincidir con al menos uno de los eventos del cliente de Discord.
-> Puedes consultarlos en la [documentación de `discord.js`](https://discord.js.org/#/docs/main/stable/class/Client)
-
 > Los argumentos de cada función dependen del tipo de evento.
-> Para obtener los tipos correctos, asegúrate de que el tipo `FeatureHandler` recibe como genérico el nombre del evento.
+> Para obtener los tipos correctos, asegúrate de que el tipo `Handler` recibe como genérico el nombre del evento.
+
+#### Rutinas
+
+Llamamos rutina a una funcionalidad que se ejecuta en un intervalo de tiempo. Puedes crear una rutina básica con acceso al cliente de Discord de la siguiente manera:
+
+```
+src
+└── features
+    └── routine-example
+        └── handlers.ts
+```
+
+```ts
+// src/features/routine-example/handlers.ts
+
+import { FeatureHandler } from "~/types
+import { cron } from "~/utils
+
+export const ready: FeatureHandler<"ready"> = async (client) => {
+  cron("* * * * *", async () => {
+    console.log(new Date())
+  })
+}
+```
+
+Esta funcionalidad creará una tarea de `node-cron` que se ejecutará cada minuto una vez que el cliente de Discord se inicie correctamente. Puedes consultar la sintaxis de cron [aquí](https://github.com/node-cron/node-cron#cron-syntax).
+
+#### Manejo de errores
+
+Todas las invocaciones de los handlers de eventos y comandos se envuelven en un `try...catch` para no interrumpir la ejecución del bot en caso de error. Los errores atrapados en producción se reportan al equipo de moderación del Dreamiverso.
+
+### Directorio `tests`
+
+TODO: documentar
 
 ### Directorio `types`
 
@@ -193,10 +259,10 @@ Este proyecto implementa un path alias de `typescript` para importar módulos de
 
 ```ts
 // ⛔ Evita imports relativos de archivos padres
-import type { FeatureHandler } from "../../types
+import type { Handler } from "../../types
 
 // ✅ Mejor usa el alias `~/*` para importar desde `src/*`
-import type { FeatureHandler } from "~/types
+import type { Handler } from "~/types
 ```
 
 ### Linting y formato

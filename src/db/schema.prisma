@@ -18,3 +18,10 @@ model User {
   updatedAt DateTime  @updatedAt
   autoaura  String?
 }
+
+model Routine {
+  id        String       @id
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payload   Json
+}
