@@ -17,7 +17,6 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 | `prepare` | Se ejecuta automáticamente. Configura `husky`.         |
 | `dev`     | Inicia el proyecto en modo desarrollo.                 |
 | `test`    | Ejecuta la suite de tests.                             |
-| `check`   | Muestra todos los errores de TypeScript.               |
 | `build`   | Crea una versión de producción para ejecutar en local. |
 | `start`   | Inicia una versión de producción generada previamente. |
 | `publish` | Crea y publica una nueva versión de producción.        |
@@ -35,7 +34,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 2. Instala `postgres` y crea un servidor local con una base de datos vacía. Puedes seguir [esta guía](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup). Cada vez que hagas cambios en el `schema`, tendrás que ejecutar el siguiente comando:
 
 ```zsh
-  yarn prisma generate
+  npm run prisma generate
 ```
 
 3. Crea un archivo `.env` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
