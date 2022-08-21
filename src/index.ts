@@ -13,8 +13,8 @@ const client = new Client({
   ],
 })
 
-const features = new Features()
-features.init(client)
+const features = new Features(client)
+features.init()
 
 client.once("ready", async () => {
   console.log("client is ready", env.NODE_ENV)

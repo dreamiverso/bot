@@ -4,8 +4,8 @@ import fs from "fs"
 import path from "path"
 import { Client, Routes, SlashCommandBuilder, REST } from "discord.js"
 
-import { env } from "~/utils"
 import { Command, CommandHandler } from "~/types"
+import { env, notifyError } from "~/utils"
 
 type ProcessedCommand = {
   builder: SlashCommandBuilder
@@ -24,6 +24,12 @@ class Features {
 
   public commandsList: ProcessedCommand[] = []
 
+  private client: Client
+
+  constructor(client: Client) {
+    this.client = client
+  }
+
   private processCommandsFile(file: string) {
     const commands: Record<string, Command> = require(file)
 
@@ -32,9 +38,27 @@ class Features {
 
       const handler: CommandHandler = async (interaction) => {
         try {
-          command.handler(interaction)
+          await command.handler(interaction)
         } catch (error) {
-          console.log(error)
+          notifyError(
+            this.client,
+            {
+              name: "kind",
+              value: "Command handler",
+            },
+            {
+              name: "command",
+              value: builder.name,
+            },
+            {
+              name: "user",
+              value: interaction.user.username,
+            },
+            {
+              name: "error",
+              value: error instanceof Error ? error.message : String(error),
+            }
+          )
         }
       }
 
@@ -60,21 +84,39 @@ class Features {
     })
   }
 
-  private registerHandlers(client: Client<false>) {
+  private registerHandlers() {
     for (const [event, features] of Object.entries(this.handlersList)) {
-      client.on(event, (...args) => {
-        features.forEach((handler) => {
+      this.client.on(event, (...args) => {
+        features.forEach(async (handler) => {
           try {
-            handler(...args)
+            await handler(...args)
           } catch (error) {
-            console.warn(`Error on ${event} handler ${handler.name}: ${error}`)
+            notifyError(
+              this.client,
+              {
+                name: "kind",
+                value: "Event handler",
+              },
+              {
+                name: "event",
+                value: event,
+              },
+              {
+                name: "handler",
+                value: handler.name,
+              },
+              {
+                name: "error",
+                value: error instanceof Error ? error.message : String(error),
+              }
+            )
           }
         })
       })
     }
   }
 
-  public async init(client: Client<false>) {
+  public async init() {
     this.rest.setToken(env.DISCORD_BOT_TOKEN)
 
     const dirents = await fs.promises.readdir(__dirname, {
@@ -101,7 +143,7 @@ class Features {
     )
 
     this.registerCommands()
-    this.registerHandlers(client)
+    this.registerHandlers()
   }
 }
 
