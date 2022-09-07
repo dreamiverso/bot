@@ -1,149 +1,119 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import fs from "fs"
-import path from "path"
-import { Client, Routes, SlashCommandBuilder, REST } from "discord.js"
+import { Client, REST } from "discord.js"
+import glob, { Entry } from "fast-glob"
 
-import { Command, CommandHandler } from "~/types"
-import { env, notifyError } from "~/utils"
-
-type ProcessedCommand = {
-  builder: SlashCommandBuilder
-  handler: CommandHandler
-}
-
-/**
- * Simplified `Handler` type as apparently TS suffers using the real one here
- */
-type FeatureHandler = (...args: unknown[]) => Promise<void>
+import {
+  CreateComponentResult,
+  CreateCommandResult,
+  CreateHandlerResult,
+  env,
+  notifyError,
+} from "~/utils"
 
 class Features {
-  public rest = new REST({ version: "10" })
+  rest = new REST({ version: "10" }).setToken(env.DISCORD_BOT_TOKEN)
 
-  public handlersList: Record<string, FeatureHandler[]> = {}
+  client: Client
 
-  public commandsList: ProcessedCommand[] = []
+  #components = new Map<string, CreateComponentResult["handler"]>()
 
-  private client: Client
+  #commands = new Map<string, CreateCommandResult["handler"]>()
+
+  #handlers = new Map<
+    CreateHandlerResult["event"],
+    CreateHandlerResult["handler"][]
+  >()
 
   constructor(client: Client) {
     this.client = client
+    this.#init()
   }
 
-  private processCommandsFile(file: string) {
-    const commands: Record<string, Command> = require(file)
+  async #readAndProcess(directory: string, callback: (entry: Entry) => void) {
+    const entries = await glob(`${__dirname}/**/${directory}/*.ts`, {
+      objectMode: true,
+    })
 
-    Object.values(commands).forEach(async (command) => {
-      const builder = await command.builder(new SlashCommandBuilder())
+    return entries.map(callback)
+  }
 
-      const handler: CommandHandler = async (interaction) => {
-        try {
-          await command.handler(interaction)
-        } catch (error) {
-          notifyError(
-            this.client,
-            {
-              name: "kind",
-              value: "Command handler",
-            },
-            {
-              name: "command",
-              value: builder.name,
-            },
-            {
-              name: "user",
-              value: interaction.user.username,
-            },
-            {
-              name: "error",
-              value: error instanceof Error ? error.message : String(error),
-            }
-          )
-        }
-      }
+  async #processComponentFiles() {
+    return this.#readAndProcess("components", (entry) => {
+      const { handler, customId } = require(entry.path)
+        .default as CreateComponentResult
 
-      this.commandsList.push({ builder, handler })
+      if (customId) this.#components.set(customId, handler)
     })
   }
 
-  private processHandlersFile(file: string) {
-    const handlers: Record<string, FeatureHandler> = require(file)
-
-    Object.entries(handlers).forEach(([event, handler]) => {
-      if (event in this.handlersList) {
-        this.handlersList[event].push(handler)
-      } else {
-        this.handlersList[event] = [handler]
-      }
+  async #processCommandFiles() {
+    return this.#readAndProcess("commands", (entry) => {
+      const content = require(entry.path).default as CreateCommandResult
+      this.#commands.set(content.builder.name, content.handler)
     })
   }
 
-  private registerCommands() {
-    this.rest.put(Routes.applicationCommands(env.DISCORD_APPLICATION_ID), {
-      body: this.commandsList.map((command) => command.builder.toJSON()),
+  async #processHandlerFiles() {
+    return this.#readAndProcess("handlers", (entry) => {
+      const { event, handler } = require(entry.path)
+        .default as CreateHandlerResult
+
+      const otherEventHandlers = this.#handlers.get(event)
+      if (!otherEventHandlers) this.#handlers.set(event, [handler])
+      else otherEventHandlers.push(handler)
     })
   }
 
-  private registerHandlers() {
-    for (const [event, features] of Object.entries(this.handlersList)) {
+  async #init() {
+    await Promise.all([
+      this.#processComponentFiles(),
+      this.#processCommandFiles(),
+      this.#processHandlerFiles(),
+    ])
+
+    this.#handlers.forEach((handlers, event) => {
       this.client.on(event, (...args) => {
-        features.forEach(async (handler) => {
+        handlers.forEach((handler) => {
           try {
-            await handler(...args)
+            handler(...args)
           } catch (error) {
-            notifyError(
-              this.client,
-              {
-                name: "kind",
-                value: "Event handler",
-              },
-              {
-                name: "event",
-                value: event,
-              },
-              {
-                name: "handler",
-                value: handler.name,
-              },
-              {
-                name: "error",
-                value: error instanceof Error ? error.message : String(error),
-              }
-            )
+            notifyError(this.client, {
+              kind: "Event handler",
+              event: event,
+              handler: handler.name,
+              error: error instanceof Error ? error.message : String(error),
+            })
           }
         })
       })
-    }
-  }
-
-  public async init() {
-    this.rest.setToken(env.DISCORD_BOT_TOKEN)
-
-    const dirents = await fs.promises.readdir(__dirname, {
-      withFileTypes: true,
     })
 
-    const directories = dirents.filter((dirent) => dirent.isDirectory())
+    this.client.on("interactionCreate", async (interaction) => {
+      if (interaction.isCommand()) {
+        const command = this.#commands.get(interaction.commandName)
+        if (!command) throw Error(`Could not find command ${command}`)
 
-    await Promise.all(
-      directories.map(async (directory) => {
-        const directoryPath = path.join(__dirname, directory.name)
-        const files = await fs.promises.readdir(directoryPath)
-        const commandsFile = files.find((file) => file === "commands.ts")
-        const handlersFile = files.find((file) => file === "handlers.ts")
-
-        if (commandsFile) {
-          this.processCommandsFile(path.join(directoryPath, commandsFile))
+        try {
+          command(interaction)
+        } catch (error) {
+          notifyError(this.client, {
+            kind: "Command handler",
+            user: interaction.user.username,
+            command: interaction.commandName,
+            error: error instanceof Error ? error.message : String(error),
+          })
         }
-
-        if (handlersFile) {
-          this.processHandlersFile(path.join(directoryPath, handlersFile))
-        }
-      })
-    )
-
-    this.registerCommands()
-    this.registerHandlers()
+      } else if ("customId" in interaction) {
+        const handler = this.#components.get(interaction.customId)
+        if (handler) handler(interaction)
+      } else {
+        notifyError(this.client, {
+          name: "Unhandled interaction type",
+          value: JSON.stringify(interaction.toJSON()),
+        })
+      }
+    })
   }
 }
 

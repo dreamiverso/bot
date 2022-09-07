@@ -3,7 +3,7 @@ import { Client, GatewayIntentBits } from "discord.js"
 import Features from "~/features"
 import { env } from "~/utils"
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
@@ -13,8 +13,7 @@ const client = new Client({
   ],
 })
 
-const features = new Features(client)
-features.init()
+new Features(client)
 
 client.once("ready", async () => {
   console.log("client is ready", env.NODE_ENV)

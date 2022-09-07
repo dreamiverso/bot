@@ -1,4 +1,4 @@
-import { APIEmbedField, Client, EmbedBuilder, RestOrArray } from "discord.js"
+import { APIEmbedField, Client, EmbedBuilder } from "discord.js"
 import { stripIndent } from "common-tags"
 
 import { sendMessageToChannel } from "."
@@ -15,14 +15,21 @@ const FOOTER = "Servicio de notificaciones"
 
 export function notifyError(
   client: Client,
-  ...field: RestOrArray<APIEmbedField>
+  fields: Record<APIEmbedField["name"], APIEmbedField["value"]>
 ) {
+  const processedFields = Object.entries(fields).map(([name, value]) => ({
+    name: name.charAt(0).toUpperCase() + name.slice(1),
+    value,
+  }))
+
+  console.log(processedFields)
+
   const embed = new EmbedBuilder()
     .setColor(0xff0000)
     .setTitle(TITLE)
     .setDescription(DESCRIPTION)
     .setTimestamp(Date.now())
-    .addFields(...field)
+    .addFields(processedFields)
     .setTimestamp()
     .setFooter({
       text: FOOTER,

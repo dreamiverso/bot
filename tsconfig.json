@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
     "moduleResolution": "node",
+    "strict": true,
+    "allowJs": false,
+    "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "sourceMap": false,
-    "allowJs": false,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -19,5 +18,5 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,14 +1,13 @@
-import { Handler } from "~/types"
-import { constants, cron } from "~/utils"
+import { constants, createHandler } from "~/utils"
 
-import { findPlayStationId, getLevelAndAuras } from "./utils"
+import { findPlayStationId, getLevelAndAuras } from "../utils"
 
 /**
  * Tries to get the PlayStation Network id on each new message in the nicknames channel.
  * Automatically starts the autoaura enrollment funnel for new users.
  * Skips users who already went through the funnel.
  */
-export const messageCreate: Handler<"messageCreate"> = async (message) => {
+export default createHandler("messageCreate", async (message) => {
   if (message.author.bot) return
   if (message.channel.id !== constants.CHANNEL_ID.NICKNAMES) return
 
@@ -60,31 +59,4 @@ export const messageCreate: Handler<"messageCreate"> = async (message) => {
 
   // TODO: assign role based on this values
   console.log("autoaura subscription flow scrape result", levelAndAuras)
-}
-
-/**
- * Creates a cron job that updates all existing autoaura subscriptions.
- */
-export const ready: Handler<"ready"> = async () => {
-  cron("0 * * * *", async () => {
-    console.log("updating all autoaura subscriptions every hour")
-
-    const endolledUsers = await db.user.findMany({
-      select: {
-        idPSN: true,
-      },
-      where: {
-        autoaura: {
-          not: null,
-        },
-      },
-    })
-
-    endolledUsers.forEach(async (user) => {
-      const { level, auras } = await getLevelAndAuras(user.idPSN)
-
-      // TODO: assign role based on this values
-      console.log(`will update user ${user} with new scrape data`, level, auras)
-    })
-  })
-}
+})
