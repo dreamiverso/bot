@@ -7,6 +7,7 @@
   "description": "El bot oficial del Dreamiverso",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
     "build:db": "prisma generate",
     "build:ts": "tsc",
@@ -24,6 +25,8 @@
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
     "@types/common-tags": "^1.8.1",
     "@types/node": "^18.7.1",
     "@types/node-cron": "^3.0.2",
@@ -34,6 +37,8 @@
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "tsx": "^3.8.2",
@@ -44,5 +49,13 @@
   },
   "prisma": {
     "schema": "src/db/schema.prisma"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
