@@ -11,7 +11,7 @@ const DESCRIPTION = stripIndent`
   Para que pueda ofrecer un servicio ininterrumpido, los errores sin manejar son atrapados automáticamente y notifican al equipo de moderación del Dreamiverso.
 `
 
-const FOOTER = "Servicio de notificaciones"
+const FOOTER = "¡Beep, boop! Servicio de notificaciones"
 
 export function notifyError(
   client: Client,
@@ -30,7 +30,6 @@ export function notifyError(
     .setDescription(DESCRIPTION)
     .setTimestamp(Date.now())
     .addFields(processedFields)
-    .setTimestamp()
     .setFooter({
       text: FOOTER,
     })
