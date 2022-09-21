@@ -22,8 +22,3 @@ client.once("ready", async () => {
 })
 
 client.login(env.DISCORD_BOT_TOKEN)
-
-process.on("uncaughtException", (err) => {
-  console.error("There was an uncaught error", err.message)
-  process.exit(1)
-})
