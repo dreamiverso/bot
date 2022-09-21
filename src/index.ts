@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js"
+import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 
 import { env, sendMessageToChannel, constants } from "~/utils"
 import { bootstrap } from "~/features"
@@ -17,6 +17,15 @@ export const client = new Client({
 
 client.once("ready", async (client) => {
   console.log("client is ready", env.NODE_ENV)
+
+  client.user.setPresence({
+    activities: [
+      {
+        type: ActivityType.Playing,
+        name: "Dreams™",
+      },
+    ],
+  })
 
   await bootstrap(client)
 
