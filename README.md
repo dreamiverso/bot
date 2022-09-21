@@ -227,14 +227,14 @@ import { env, constants } from "~/utils"
 
 ## Variables de entorno
 
-El proyecto requiere un archivo `.env` ubicado en la raíz del proyecto para funcionar correctamente. Puedes clonar el archivo `.env.template` y rellenarlo con las variables necesarias.
+El proyecto requiere un archivo `.env` para funcionar correctamente. Puedes clonar el archivo `.env.template` y rellenarlo con las variables necesarias.
 
-| Variable                 |  Valor   | Descripción                                                                                                                                                                                                                                                                                    |
-| ------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`           | `string` | TODO. Si necesitas este token ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me)                                                                                                                                                                   |
-| `DISCORD_BOT_TOKEN`      | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `Bot > Token`. Si necesitas este token ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me) |
-| `DISCORD_APPLICATION_ID` | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `General Information > Application ID`                                                                                                |
-| `DISCORD_SERVER_ID`      | `string` | Se obtiene desde la aplicación de Discord. Necesitarás activar el modo desarrollador en `Ajustes de usuario > Avanzado > Modo desarrollador`. Luego, haz click derecho en el nombre del servidor y selecciona `Copiar ID`.                                                                     |
+| Variable                 |  Valor   | Descripción                                                                                                                                                                                                                |
+| ------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`           | `string` | La connection string de tu base de datos.                                                                                                                                                                                  |
+| `DISCORD_BOT_TOKEN`      | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `Bot > Token`.                                                    |
+| `DISCORD_APPLICATION_ID` | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `General Information > Application ID`                            |
+| `DISCORD_SERVER_ID`      | `string` | Se obtiene desde la aplicación de Discord. Necesitarás activar el modo desarrollador en `Ajustes de usuario > Avanzado > Modo desarrollador`. Luego, haz click derecho en el nombre del servidor y selecciona `Copiar ID`. |
 
 ### Acceder a las variables de entorno
 
