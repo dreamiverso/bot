@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
-    "sync": "cross-env NODE_ENV=development tsx src/scripts/syncCommands.ts",
+    "sync": "cross-env NODE_ENV=development tsx src/scripts/sync.ts",
     "test": "echo not implemented!",
     "build:db": "prisma generate",
     "build:ts": "tsc",
