@@ -7,6 +7,7 @@ import {
   CreateCommandResult,
   CreateComponentResult,
   CreateHandlerResult,
+  env,
   notifyError,
   sendMessageToChannel,
 } from "~/utils"
@@ -122,6 +123,8 @@ export async function bootstrap(client: Client<boolean>) {
 
   handleEvents(client)
   handleInteractions(client)
+
+  if (env.NODE_ENV !== "production") return
 
   sendMessageToChannel(
     client,
