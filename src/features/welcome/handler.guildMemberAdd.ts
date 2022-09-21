@@ -50,7 +50,7 @@ export default createHandler("guildMemberAdd", async (guildMember) => {
     })
 
   generalChannel.send({
-    content: `¡Muy buenas, ${guildMember.nickname}!`,
+    content: `¡Muy buenas, ${guildMember.user.username}!`,
     embeds: [embed],
   })
 

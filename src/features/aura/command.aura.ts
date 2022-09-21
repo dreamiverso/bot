@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js"
 
 import { createCommand } from "~/utils"
 
-import auraPicker from "../components/auraPicker"
+import auraPicker from "./component.auraPicker"
 
 const builder = new SlashCommandBuilder()
   .setName("aura")

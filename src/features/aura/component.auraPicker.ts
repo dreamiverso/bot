@@ -2,9 +2,9 @@ import { ActionRowBuilder, SelectMenuBuilder } from "discord.js"
 
 import { createComponent } from "~/utils"
 
-import { roles } from "../utils"
+import { roles } from "./utils"
 
-import playStationIdForm from "./playStationIdForm"
+import playStationIdForm from "./component.playStationIdForm"
 
 enum ID {
   AURA_PICKER = "AURA_PICKER",

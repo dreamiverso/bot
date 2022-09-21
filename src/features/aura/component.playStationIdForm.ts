@@ -8,7 +8,7 @@ import {
 
 import { createComponent } from "~/utils"
 
-import { getIndreamsUserData } from "../utils"
+import { getIndreamsUserData } from "./utils"
 
 enum ID {
   AURA_FORM_INPUT_PSN_ID = "AURA_FORM_INPUT_PSN_ID",

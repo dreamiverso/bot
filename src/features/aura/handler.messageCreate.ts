@@ -1,6 +1,6 @@
 import { constants, createHandler } from "~/utils"
 
-import { findPlayStationId } from "../utils"
+import { findPlayStationId } from "./utils"
 
 /**
  * Tries to get the PlayStation Network ID on each new message in the nicknames channel.

@@ -4,6 +4,7 @@ import { Client } from "discord.js"
 import glob from "fast-glob"
 
 import {
+  constants,
   CreateCommandResult,
   CreateComponentResult,
   CreateHandlerResult,
@@ -11,7 +12,6 @@ import {
   notifyError,
   sendMessageToChannel,
 } from "~/utils"
-import { CHANNEL_ID } from "~/utils/constants"
 
 const componentsMap = new Map<string, CreateComponentResult["handler"]>()
 const commandsMap = new Map<string, CreateCommandResult["handler"]>()
@@ -25,10 +25,10 @@ const handlersMap = new Map<
  * Requires a generic with the expected content type
  */
 async function readContent<T>(
-  directory: string,
+  kind: "command" | "component" | "handler",
   callback: (content: T) => void
 ) {
-  const files = await glob(`${__dirname}/**/${directory}/*.ts`)
+  const files = await glob(`${__dirname}/**/${kind}.*.ts`)
 
   files.forEach((file) => {
     const content: T = require(file).default
@@ -37,20 +37,23 @@ async function readContent<T>(
 }
 
 async function getComponents() {
-  readContent<CreateComponentResult>("components", ({ handler, customId }) => {
-    if (!customId) throw Error("Missing component `customId`")
-    componentsMap.set(customId, handler)
-  })
+  return readContent<CreateComponentResult>(
+    "component",
+    ({ handler, customId }) => {
+      if (!customId) throw Error("Missing component `customId`")
+      componentsMap.set(customId, handler)
+    }
+  )
 }
 
 async function getCommands() {
-  readContent<CreateCommandResult>("commands", ({ builder, handler }) => {
+  return readContent<CreateCommandResult>("command", ({ builder, handler }) => {
     commandsMap.set(builder.name, handler)
   })
 }
 
 async function getHandlers() {
-  readContent<CreateHandlerResult>("handlers", ({ event, handler }) => {
+  return readContent<CreateHandlerResult>("handler", ({ event, handler }) => {
     const otherEventHandlers = handlersMap.get(event)
     if (!otherEventHandlers) {
       handlersMap.set(event, [handler])
@@ -60,7 +63,7 @@ async function getHandlers() {
   })
 }
 
-function handleEvents(client: Client<boolean>) {
+function initHandlers(client: Client<true>) {
   handlersMap.forEach((handlers, event) => {
     client.on(event, (...args) => {
       handlers.forEach((handler) => {
@@ -79,7 +82,7 @@ function handleEvents(client: Client<boolean>) {
   })
 }
 
-function handleInteractions(client: Client<boolean>) {
+function initInteractions(client: Client<true>) {
   client.on("interactionCreate", async (interaction) => {
     if (interaction.isCommand()) {
       const command = commandsMap.get(interaction.commandName)
@@ -118,17 +121,17 @@ function handleInteractions(client: Client<boolean>) {
   })
 }
 
-export async function bootstrap(client: Client<boolean>) {
+export async function bootstrap(client: Client<true>) {
   await Promise.all([getComponents(), getCommands(), getHandlers()])
 
-  handleEvents(client)
-  handleInteractions(client)
+  initHandlers(client)
+  initInteractions(client)
 
   if (env.NODE_ENV !== "production") return
 
   sendMessageToChannel(
     client,
-    CHANNEL_ID.BOT_DEBUG,
+    constants.CHANNEL_ID.BOT_DEBUG,
     `Acaban de enchufarme (${new Date().toISOString()})`
   )
 }

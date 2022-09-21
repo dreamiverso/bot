@@ -1,6 +1,6 @@
 import { createHandler, cron } from "~/utils"
 
-import { getIndreamsUserData } from "../utils"
+import { getIndreamsUserData } from "./utils"
 
 export default createHandler("ready", async (client) => {
   cron("0 * * * *", async () => {
