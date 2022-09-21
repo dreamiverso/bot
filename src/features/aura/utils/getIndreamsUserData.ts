@@ -2,7 +2,7 @@ import { Window } from "happy-dom"
 
 const window = new Window()
 
-export async function getLevelAndAuras(id: string) {
+export async function getIndreamsUserData(id: string) {
   const response = await fetch(`https://indreams.me/${id}`)
   const data = await response.text()
 

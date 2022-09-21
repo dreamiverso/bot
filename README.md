@@ -16,6 +16,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 | --------- | ------------------------------------------------------ |
 | `prepare` | Se ejecuta automáticamente. Configura `husky`.         |
 | `dev`     | Inicia el proyecto en modo desarrollo.                 |
+| `sync`    | Sincroniza los comandos del bot con la API de Discord. |
 | `test`    | Ejecuta la suite de tests.                             |
 | `build`   | Crea una versión de producción para ejecutar en local. |
 | `start`   | Inicia una versión de producción generada previamente. |

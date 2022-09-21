@@ -1,11 +1,11 @@
 import { constants, createHandler } from "~/utils"
 
-import { findPlayStationId, getLevelAndAuras } from "../utils"
+import { findPlayStationId } from "../utils"
 
 /**
- * Tries to get the PlayStation Network id on each new message in the nicknames channel.
- * Automatically starts the autoaura enrollment funnel for new users.
- * Skips users who already went through the funnel.
+ * Tries to get the PlayStation Network ID on each new message in the nicknames channel.
+ * If an ID is found, notifies the user of our autoaura feature.
+ * Skips users who already have been notified.
  */
 export default createHandler("messageCreate", async (message) => {
   if (message.author.bot) return
@@ -16,47 +16,23 @@ export default createHandler("messageCreate", async (message) => {
   // Could not find any id on this message
   if (!id) return
 
-  const existingUser = await db.user.findUnique({
-    select: {
-      autoaura: true,
-    },
+  const intent = await db.autoauraIntent.findUnique({
     where: {
       idDiscord: message.author.id,
     },
   })
 
   // User has already been asked
-  if (existingUser?.autoaura) return
-
-  // TODO ask for consent
-  // Here we assume user wants to endoll to autoaura
-  await message.reply({
-    content: "Oye quieres suscribirte al autoaura?",
-  })
+  if (intent) return
 
   await message.author.send({
-    content: "Oye quieres suscribirte al autoaura",
+    content:
+      "Oye quieres suscribirte al autoaura? Te digo como en este mensaje pero lo tienes que hacer tu con el comando",
   })
 
-  const consents = true
-
-  const levelAurasPromise = getLevelAndAuras(id)
-
-  const createUserPromise = db.user.create({
+  await db.autoauraIntent.create({
     data: {
       idDiscord: message.author.id,
-      idPSN: id,
-      autoaura: consents
-        ? constants.AUTOAURA_SUBSCRIPTION_STATE.ENROLLED
-        : constants.AUTOAURA_SUBSCRIPTION_STATE.DECLINED,
     },
   })
-
-  const [levelAndAuras] = await Promise.all([
-    levelAurasPromise,
-    createUserPromise,
-  ])
-
-  // TODO: assign role based on this values
-  console.log("autoaura subscription flow scrape result", levelAndAuras)
 })

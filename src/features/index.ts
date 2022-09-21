@@ -1,120 +1,132 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { Client, REST } from "discord.js"
-import glob, { Entry } from "fast-glob"
+import { Client } from "discord.js"
+import glob from "fast-glob"
 
 import {
-  CreateComponentResult,
   CreateCommandResult,
+  CreateComponentResult,
   CreateHandlerResult,
   env,
   notifyError,
+  sendMessageToChannel,
 } from "~/utils"
+import { CHANNEL_ID } from "~/utils/constants"
 
-class Features {
-  rest = new REST({ version: "10" }).setToken(env.DISCORD_BOT_TOKEN)
+const componentsMap = new Map<string, CreateComponentResult["handler"]>()
+const commandsMap = new Map<string, CreateCommandResult["handler"]>()
+const handlersMap = new Map<
+  CreateHandlerResult["event"],
+  CreateHandlerResult["handler"][]
+>()
 
-  client: Client
+/**
+ * Reads content of files.
+ * Requires a generic with the expected content type
+ */
+async function readContent<T>(
+  directory: string,
+  callback: (content: T) => void
+) {
+  const files = await glob(`${__dirname}/**/${directory}/*.ts`)
 
-  #components = new Map<string, CreateComponentResult["handler"]>()
+  files.forEach((file) => {
+    const content: T = require(file).default
+    return callback(content)
+  })
+}
 
-  #commands = new Map<string, CreateCommandResult["handler"]>()
+async function getComponents() {
+  readContent<CreateComponentResult>("components", ({ handler, customId }) => {
+    if (!customId) throw Error("Missing component `customId`")
+    componentsMap.set(customId, handler)
+  })
+}
 
-  #handlers = new Map<
-    CreateHandlerResult["event"],
-    CreateHandlerResult["handler"][]
-  >()
+async function getCommands() {
+  readContent<CreateCommandResult>("commands", ({ builder, handler }) => {
+    commandsMap.set(builder.name, handler)
+  })
+}
 
-  constructor(client: Client) {
-    this.client = client
-    this.#init()
-  }
+async function getHandlers() {
+  readContent<CreateHandlerResult>("handlers", ({ event, handler }) => {
+    const otherEventHandlers = handlersMap.get(event)
+    if (!otherEventHandlers) {
+      handlersMap.set(event, [handler])
+    } else {
+      otherEventHandlers.push(handler)
+    }
+  })
+}
 
-  async #readAndProcess(directory: string, callback: (entry: Entry) => void) {
-    const entries = await glob(`${__dirname}/**/${directory}/*.ts`, {
-      objectMode: true,
-    })
-
-    return entries.map(callback)
-  }
-
-  async #processComponentFiles() {
-    return this.#readAndProcess("components", (entry) => {
-      const { handler, customId } = require(entry.path)
-        .default as CreateComponentResult
-
-      if (customId) this.#components.set(customId, handler)
-    })
-  }
-
-  async #processCommandFiles() {
-    return this.#readAndProcess("commands", (entry) => {
-      const content = require(entry.path).default as CreateCommandResult
-      this.#commands.set(content.builder.name, content.handler)
-    })
-  }
-
-  async #processHandlerFiles() {
-    return this.#readAndProcess("handlers", (entry) => {
-      const { event, handler } = require(entry.path)
-        .default as CreateHandlerResult
-
-      const otherEventHandlers = this.#handlers.get(event)
-      if (!otherEventHandlers) this.#handlers.set(event, [handler])
-      else otherEventHandlers.push(handler)
-    })
-  }
-
-  async #init() {
-    await Promise.all([
-      this.#processComponentFiles(),
-      this.#processCommandFiles(),
-      this.#processHandlerFiles(),
-    ])
-
-    this.#handlers.forEach((handlers, event) => {
-      this.client.on(event, (...args) => {
-        handlers.forEach((handler) => {
-          try {
-            handler(...args)
-          } catch (error) {
-            notifyError(this.client, {
-              kind: "Event handler",
-              event: event,
-              handler: handler.name,
-              error: error instanceof Error ? error.message : String(error),
-            })
-          }
-        })
-      })
-    })
-
-    this.client.on("interactionCreate", async (interaction) => {
-      if (interaction.isCommand()) {
-        const command = this.#commands.get(interaction.commandName)
-        if (!command) throw Error(`Could not find command ${command}`)
-
+function handleEvents(client: Client<boolean>) {
+  handlersMap.forEach((handlers, event) => {
+    client.on(event, (...args) => {
+      handlers.forEach((handler) => {
         try {
-          command(interaction)
+          handler(...args)
         } catch (error) {
-          notifyError(this.client, {
-            kind: "Command handler",
-            user: interaction.user.username,
-            command: interaction.commandName,
+          notifyError(client, {
+            kind: "Event handler",
+            event: event,
+            handler: handler.name,
             error: error instanceof Error ? error.message : String(error),
           })
         }
-      } else if ("customId" in interaction) {
-        const handler = this.#components.get(interaction.customId)
-        if (handler) handler(interaction)
-      } else {
-        notifyError(this.client, {
-          name: "Unhandled interaction type",
-          value: JSON.stringify(interaction.toJSON()),
-        })
-      }
+      })
     })
-  }
+  })
 }
 
-export default Features
+function handleInteractions(client: Client<boolean>) {
+  client.on("interactionCreate", async (interaction) => {
+    if (interaction.isCommand()) {
+      const command = commandsMap.get(interaction.commandName)
+      if (!command) throw Error(`Could not find command ${command}`)
+
+      try {
+        return command(interaction)
+      } catch (error) {
+        return notifyError(client, {
+          kind: "Command handler",
+          user: interaction.user.username,
+          command: interaction.commandName,
+          error: error instanceof Error ? error.message : String(error),
+        })
+      }
+    } else if ("customId" in interaction) {
+      const handler = componentsMap.get(interaction.customId)
+      if (!handler) throw Error(`Missing handler ${interaction.customId}`)
+
+      try {
+        handler(interaction)
+      } catch (error) {
+        notifyError(client, {
+          kind: "Component handler",
+          user: interaction.user.username,
+          customId: interaction.customId,
+          error: error instanceof Error ? error.message : String(error),
+        })
+      }
+    } else {
+      notifyError(client, {
+        name: "Unhandled interaction type",
+        value: JSON.stringify(interaction.toJSON()),
+      })
+    }
+  })
+}
+
+export async function bootstrap(client: Client<boolean>) {
+  await Promise.all([getComponents(), getCommands(), getHandlers()])
+
+  handleEvents(client)
+  handleInteractions(client)
+
+  sendMessageToChannel(
+    client,
+    CHANNEL_ID.BOT_DEBUG,
+    `Acaban de enchufarme (${new Date().toISOString()})`
+  )
+}

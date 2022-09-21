@@ -1,7 +1,9 @@
 import { Client, GatewayIntentBits } from "discord.js"
 
-import Features from "~/features"
 import { env } from "~/utils"
+import { bootstrap } from "~/features"
+
+console.log("Creating new client…")
 
 export const client = new Client({
   intents: [
@@ -13,10 +15,15 @@ export const client = new Client({
   ],
 })
 
-new Features(client)
-
 client.once("ready", async () => {
   console.log("client is ready", env.NODE_ENV)
+  await bootstrap(client)
+  console.log("Bot is alive!!!")
 })
 
 client.login(env.DISCORD_BOT_TOKEN)
+
+process.on("uncaughtException", (err) => {
+  console.error("There was an uncaught error", err.message)
+  process.exit(1)
+})

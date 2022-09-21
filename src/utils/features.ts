@@ -17,10 +17,14 @@ export function createComponent<
   const builderString = JSON.stringify(builder.toJSON())
   const customIdMatch = builderString.match(/(?<="custom_id":")(.+?)(?=",)/g)
 
+  if (!customIdMatch?.length) {
+    throw Error("Missing component custom id")
+  }
+
   return {
     builder,
     handler,
-    customId: customIdMatch && customIdMatch[0],
+    customId: customIdMatch[0],
   }
 }
 
@@ -29,9 +33,11 @@ export type CreateComponentResult = ReturnType<CreateComponent>
 
 /**
  * TODO: Documentation
+ * TODO: The `Builder` generic is here because I think subcommands receive another type of interaction in its handler
+ * so we should do some conditional logic with the builder type
  */
-export function createCommand(
-  builder: SlashCommandBuilder,
+export function createCommand<Builder extends SlashCommandBuilder>(
+  builder: Builder,
   handler: (interaction: CommandInteraction) => void
 ) {
   return {

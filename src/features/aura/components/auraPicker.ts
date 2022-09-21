@@ -10,7 +10,7 @@ enum ID {
   AURA_PICKER = "AURA_PICKER",
 }
 
-export const builder = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+const builder = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
   new SelectMenuBuilder()
     .setCustomId(ID.AURA_PICKER)
     .setPlaceholder("Selecciona el aura al que cambiar")
@@ -19,30 +19,43 @@ export const builder = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
 
 export default createComponent(builder, async (interaction) => {
   if (!interaction.isSelectMenu()) return
-  if (interaction.customId !== ID.AURA_PICKER) return
 
   const [selection] = interaction.values
 
-  if (selection !== "auto") {
-    interaction.reply(`te tengo que asignar el aura ${selection}`)
-    return
-  }
-
-  const existingUser = await db.user.findUnique({
-    select: {
-      idPSN: true,
-    },
+  const intent = await db.autoauraIntent.findUnique({
     where: {
       idDiscord: interaction.user.id,
     },
   })
 
-  if (!existingUser) {
-    interaction.showModal(playStationIdForm.builder)
+  if (selection !== "auto") {
+    interaction.reply(`te tengo que asignar el aura ${selection}`)
+
+    // Keeps the intent to prevent invoking the enrollemnt flow on the nicknames channel,
+    // but removes its PSN ID to opt out of the cron job
+    if (intent) {
+      await db.autoauraIntent.update({
+        where: {
+          idDiscord: interaction.user.id,
+        },
+        data: {
+          idPSN: null,
+        },
+      })
+    }
+
     return
   }
 
-  interaction.reply(
-    `tengo que mirar si tu id ${existingUser.idPSN} existe en indreams y asignarte lo que encuentre`
-  )
+  // User is already endolled and selected autoaura
+  if (intent?.idPSN) {
+    await interaction.reply(
+      "Ya estás en autoaura. Quieres forzar actualización?"
+    )
+
+    return
+  }
+
+  // User is not endolled. Ask for PSN ID
+  await interaction.showModal(playStationIdForm.builder)
 })

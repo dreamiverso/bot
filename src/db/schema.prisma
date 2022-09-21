@@ -10,13 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model AutoauraIntent {
   id        Int       @id @default(autoincrement())
   idDiscord String    @unique
-  idPSN     String    @unique
+  idPSN     String?   @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  autoaura  String?
 }
 
 model Routine {

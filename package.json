@@ -9,6 +9,8 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
+    "sync": "cross-env NODE_ENV=development tsx src/scripts/syncCommands.ts",
+    "test": "echo not implemented!",
     "build:db": "prisma generate",
     "build:ts": "tsc",
     "build": "yarn run-p build:*",
@@ -51,7 +53,7 @@
     "schema": "src/db/schema.prisma"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "*.ts": "eslint --fix"
   },
   "commitlint": {
     "extends": [

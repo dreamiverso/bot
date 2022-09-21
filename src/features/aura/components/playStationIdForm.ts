@@ -6,9 +6,9 @@ import {
   TextInputStyle,
 } from "discord.js"
 
-import { createComponent, constants } from "~/utils"
+import { createComponent } from "~/utils"
 
-import { getLevelAndAuras } from "../utils"
+import { getIndreamsUserData } from "../utils"
 
 enum ID {
   AURA_FORM_INPUT_PSN_ID = "AURA_FORM_INPUT_PSN_ID",
@@ -33,16 +33,21 @@ const builder = new ModalBuilder()
 
 export default createComponent(builder, async (interaction) => {
   if (!interaction.isModalSubmit()) return
-  if (interaction.customId !== ID.AURA_FORM_MODAL) return
 
   const idPSN = interaction.fields.getTextInputValue(ID.AURA_FORM_INPUT_PSN_ID)
 
   try {
-    const { level, auras } = await getLevelAndAuras(idPSN)
-    await db.user.create({
-      data: {
+    const { level, auras } = await getIndreamsUserData(idPSN)
+
+    await db.autoauraIntent.upsert({
+      where: {
         idDiscord: interaction.user.id,
-        autoaura: constants.AUTOAURA_SUBSCRIPTION_STATE.ENROLLED,
+      },
+      create: {
+        idDiscord: interaction.user.id,
+        idPSN,
+      },
+      update: {
         idPSN,
       },
     })
@@ -51,10 +56,8 @@ export default createComponent(builder, async (interaction) => {
       content: `te pongo aura que la he encontrao nivel: ${level} auras: ${auras[0]}`,
     })
   } catch (error) {
-    // la ha liado y no es correcto. Volver a mandarle el modal
-    console.log(error)
     await interaction.reply({
-      content: "ese psn id no existe en dreams!",
+      content: "ese psn id no existe en dreams! reintentar o cancelar",
     })
   }
 })
