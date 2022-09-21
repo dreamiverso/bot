@@ -7,7 +7,6 @@ import {
   CreateCommandResult,
   CreateComponentResult,
   CreateHandlerResult,
-  env,
   notifyError,
   sendMessageToChannel,
 } from "~/utils"

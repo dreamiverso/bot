@@ -22,8 +22,6 @@ export function notifyError(
     value,
   }))
 
-  console.log(processedFields)
-
   const embed = new EmbedBuilder()
     .setColor(0xff0000)
     .setTitle(TITLE)
