@@ -77,18 +77,9 @@ Este proyecto consta de dos ramas principales:
 src
 ├── db
 ├── features
-│   └── {feature}
-│       ├── (tests)
-│       ├── (types)
-│       ├── (utils)
-│       ├── (commands.ts)
-│       └── (handlers.ts)
-├── tests
+├── scripts
 ├── types
 └── utils
-
-{} → Nombre arbitrario
-() → Opcional
 ```
 
 ### Directorio `db`
@@ -97,117 +88,151 @@ Este proyecto utiliza `prisma` para interactuar con una base de datos `postgresq
 
 ### Directorio `features`
 
-Un sistema basado en el `file system` de `node` para construir funcionalidades del bot. Cada subdirectorio encapsula una funcionalidad, que puede depender de comandos `slash` o de eventos del cliente de Discord.
+Un sistema basado en el `file system` de `node` para construir funcionalidades del bot. Cada subdirectorio encapsula una funcionalidad, que puede depender de comandos `slash`, componentes o eventos del cliente de Discord.
 
 #### Estructura
 
-Un subdirectorio de funcionalidad debe contener al menos uno de los siguientes archivos:
-
-- `commands.ts` → Para registrar comandos `slash` de Discord
-- `handlers.ts` → Para responder a eventos del cliente de Discord
-
-El resto de archivos y directorios son arbitrarios. Puedes aprovechar esto para separar funcionalidades complejas en módulos más pequeños e importarlos en `commands.ts` o `handlers.ts`.
-
 ```
 src
 └── features
-    └── {feature}
-        ├── (commands).ts
-        └── (handlers).ts
-
-{} → Nombre arbitrario
-() → Opcional
+    └── **
+        ├── command.*.ts
+        ├── component.*.ts
+        └── handler.*.ts
 ```
 
-##### `commands.ts`
+Un subdirectorio de `features` debe contener al menos uno de los siguientes archivos:
 
-Permite registrar comandos `slash` de Discord. Exporta una o varias funciones `createCommand` para registrar comandos nuevos. `createCommand` requiere dos funciones asíncronas:
+- `command.*.ts` → Para registrar comandos `slash` de Discord
+- `component.*.ts` → Para crear componentes de Discord
+- `handler.*.ts` → Para responder a eventos del cliente de Discord
 
-- `builder` → Se resuelve al iniciar el bot y registra el resultado en la API de Discord.
-- `handler` → Se invoca cuando se utiliza el comando.
+El resto de archivos y directorios son arbitrarios. Puedes aprovechar esto para separar funcionalidades complejas en módulos más pequeños.
+
+##### `command.*.ts`
+
+Permite registrar un comando `slash` de Discord. Debe incluir un `export default` de la función `createCommand`. Requiere dos argumentos:
+
+- `builder` → Un builder de comandos de `discord.js`
+- `handler` → La función a invocar cuando se ejecute el comando
 
 ```ts
-// src/features/{feature}/commands.ts
+// src/features/test/command.demoCommand.ts
+
+import { SlashCommandBuilder } from "discord.js"
 
 import { createCommand } from "~/utils"
 
-export const foo = createCommand({
-  async builder(builder) {
-    return builder.setName("foo")
-  }
-  async handler(interaction) {
-    await interaction.respond("bar")
-  }
-})
+const builder = new SlashCommandbuilder()
+  .setName("marco")
+  .setDescription("Responde sin mucho entusiasmo")
 
-export const baz = createCommand({
-  async builder(builder) {
-    return builder.setName("baz")
-  }
-  async handler(interaction) {
-    await interaction.respond("qux")
-  }
+export default createComponent(builder, async (interaction) => {
+  interaction.reply("Polo")
 })
 ```
 
-##### `handlers.ts`
+##### `component.*.ts`
 
-Permite responder a eventos del cliente de Discord. Exporta una o varias funciones asíncronas con el nombre del evento que ejecutará la función. Puedes consultar la lista de eventos en la [documentación de `discord.js`](https://discord.js.org/#/docs/main/stable/class/Client).
+Permite crear un componente de Discord. Debe incluir un `export default` de la función `createComponent`. Requiere dos argumentos:
+
+- `builder` → Un builder de componente de `discord.js`
+- `handler` → La función a invocar cuando se interactúe con el componente
 
 ```ts
-// src/features/{feature}/handlers.ts
+// src/features/test/component.demoButton.ts
 
-import { FeatureHandler } from "~/types
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js
 
-export const messageCreate: FeatureHandler<"messageCreate"> = async (
-  client
-) => {
-  // Se invoca en client.on("messageCreate")
-}
+import { createCommand } from "~/utils"
 
-export const messageDelete: FeatureHandler<"messageDelete"> = async (
-  client
-) => {
-  // Se invoca en client.on("messageDelete")
-}
+const builder = new ActionRowBuilder().addComponents(
+  new ButtonBuilder()
+    .setCustomId("id-único")
+    .setLabel('¡Púlsame!')
+    .setStyle(ButtonStyle.Primary),
+)
+
+export default createComponent(builder, (interaction) => {
+  interaction.reply("Así me gusta")
+})
 ```
 
-> Los argumentos de cada función dependen del tipo de evento.
-> Para obtener los tipos correctos, asegúrate de que el tipo `Handler` recibe como genérico el nombre del evento.
+Los componentes se envían como respuesta a la interación de un usuario con un comando `slash`:
+
+```ts
+// src/features/test/command.demoCommand.ts
+// src/features/test/component.demoButton.ts
+
+import { SlashCommandBuilder } from "discord.js"
+
+import { createCommand } from "~/utils"
+
+import componentDemoButton from "./component.demoButton"
+
+const builder = new SlashCommandbuilder()
+  .setName("botón")
+  .setDescription("Responde con un botón")
+
+export default createComponent(builder, async (interaction) => {
+  interaction.reply({
+    components: [componentDemoButton.builder]
+  })
+})
+```
+
+> Si añades nuevos builders de comandos o modificas los ya existentes, deberás sincronizarlos con la API de Discord mediante el comando `sync`. El proceso de sincronizado debe pasar por la cache de Discord, por lo que tardará un rato en mostrarse en la aplicación.
+
+> Sincronizar comandos solo actualiza la información de los builders. Los cambios en los handlers no dependen de la API de Discord, por lo que no requiren el comando `sync` y se actualizan cada vez que se guarda el archivo de comando.
+
+##### `handler.*.ts`
+
+Permite responder a eventos del cliente de `discord.js`. Debe incluir un `export default` de la función `createHandler`. Requiere dos argumentos:
+
+- `event` → El nombre del evento de `discord.js` que ejecutará la función. Puedes consultar la lista de eventos en la [documentación de `discord.js`](https://discord.js.org/#/docs/main/stable/class/Client).
+- `handler` → La función a invocar cuando se reciba el evento.
+
+```ts
+// src/features/**/handler.*.ts
+import { createHandler } from "~/utils"
+
+export default createHandler("messageCreate", async (message) => {
+  interaction.reply("¡Hay un mensaje nuevo!")
+})
+```
 
 #### Rutinas
 
-Llamamos rutina a una funcionalidad que se ejecuta en un intervalo de tiempo. Puedes crear una rutina básica con acceso al cliente de Discord de la siguiente manera:
+Llamamos rutina a una funcionalidad que se ejecuta en un intervalo de tiempo mediante un cron job. Puedes crear una rutina básica con acceso al cliente de `discord.js` de la siguiente manera:
 
 ```
 src
 └── features
-    └── routine-example
-        └── handlers.ts
+    └── routine
+        └── handler.ready.ts
 ```
 
 ```ts
-// src/features/routine-example/handlers.ts
+// src/features/routine/handler.ready.ts
 
-import { FeatureHandler } from "~/types
-import { cron } from "~/utils
+import { createHandler, cron } from "~/utils
 
-export const ready: FeatureHandler<"ready"> = async (client) => {
+export default createHandler("ready", async (client) => {
   cron("* * * * *", async () => {
-    console.log(new Date())
+    console.log("Me ejecuto cada minuto")
   })
-}
+})
 ```
 
-Esta funcionalidad creará una tarea de `node-cron` que se ejecutará cada minuto una vez que el cliente de Discord se inicie correctamente. Puedes consultar la sintaxis de cron [aquí](https://github.com/node-cron/node-cron#cron-syntax).
+Esta funcionalidad creará una tarea de `node-cron` que se ejecutará cada minuto una vez que el cliente de Discord se inicie correctamente. Puedes consultar la sintaxis de cron [aquí](https://github.com/node-cron/node-cron#cron-syntax) o usar [este editor online](https://crontab.guru/examples.html).
 
 #### Manejo de errores
 
 Todas las invocaciones de los handlers de eventos y comandos se envuelven en un `try...catch` para no interrumpir la ejecución del bot en caso de error. Los errores atrapados en producción se reportan al equipo de moderación del Dreamiverso.
 
-### Directorio `tests`
+### Directorio `scripts`
 
-TODO: documentar
+Contiene diferentes scripts ejecutables mediante comandos definidos en el `package.json`.
 
 ### Directorio `types`
 
