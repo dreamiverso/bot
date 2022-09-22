@@ -6,13 +6,9 @@ import { roles } from "./utils"
 
 import playStationIdForm from "./component.playStationIdForm"
 
-enum ID {
-  AURA_PICKER = "AURA_PICKER",
-}
-
 const builder = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
   new SelectMenuBuilder()
-    .setCustomId(ID.AURA_PICKER)
+    .setCustomId("AURA_PICKER")
     .setPlaceholder("Selecciona el aura al que cambiar")
     .addOptions(Object.values(roles))
 )

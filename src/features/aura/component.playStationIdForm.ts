@@ -10,10 +10,10 @@ import { createComponent } from "~/utils"
 
 import { getIndreamsUserData } from "./utils"
 
-enum ID {
-  AURA_FORM_INPUT_PSN_ID = "AURA_FORM_INPUT_PSN_ID",
-  AURA_FORM_MODAL = "AURA_FORM_MODAL",
-}
+const ID = {
+  AURA_FORM_INPUT_PSN_ID: "AURA_FORM_INPUT_PSN_ID",
+  AURA_FORM_MODAL: "AURA_FORM_MODAL",
+} as const
 
 const input = new TextInputBuilder()
   .setCustomId(ID.AURA_FORM_INPUT_PSN_ID)
