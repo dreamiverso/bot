@@ -9,12 +9,13 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
-    "sync": "cross-env NODE_ENV=development tsx src/scripts/sync.ts",
-    "test": "echo not implemented!",
+    "sync": "cross-env NODE_ENV=production tsx src/scripts/sync.ts",
+    "lint": "eslint --fix",
     "build:db": "prisma generate",
     "build:ts": "tsc",
     "build": "yarn run-p build:*",
-    "start": "cross-env NODE_ENV=production node ."
+    "start": "cross-env NODE_ENV=production node .",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
@@ -47,7 +48,7 @@
     "typescript": "^4.8.3"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": "18.x"
   },
   "prisma": {
     "schema": "src/db/schema.prisma"

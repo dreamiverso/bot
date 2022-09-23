@@ -12,15 +12,15 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 
 ## Comandos
 
-| Comando   | Desscripción                                           |
-| --------- | ------------------------------------------------------ |
-| `prepare` | Se ejecuta automáticamente. Configura `husky`.         |
-| `dev`     | Inicia el proyecto en modo desarrollo.                 |
-| `sync`    | Sincroniza los datos del bot con la API de Discord.    |
-| `test`    | Ejecuta la suite de tests.                             |
-| `build`   | Crea una versión de producción para ejecutar en local. |
-| `start`   | Inicia una versión de producción generada previamente. |
-| `publish` | Crea y publica una nueva versión de producción.        |
+| Comando   | Desscripción                                                    |
+| --------- | --------------------------------------------------------------- |
+| `prepare` | Se ejecuta automáticamente. Configura `husky`.                  |
+| `dev`     | Inicia el proyecto en modo desarrollo.                          |
+| `sync`    | Sincroniza los datos del bot con la API de Discord.             |
+| `lint`    | Ejecuta ESLint para formatear y solventar errores en el código. |
+| `build`   | Crea una versión de producción para ejecutar en local.          |
+| `start`   | Inicia una versión de producción generada previamente.          |
+| `check`   | Comprueba la validez de los tipos de TypeScript.                |
 
 ## Workflows
 
@@ -56,14 +56,6 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
   npm run dev
 ```
 
-### Actualizar la versión de producción
-
-Ejecuta el siguiente comando y sigue las indicaciones. El proceso de CI/CD ejecutará los tests necesarios y reiniciará el bot con la nueva versión.
-
-```zsh
-  npm run publish
-```
-
 ## Ramas y deployments
 
 Este proyecto consta de dos ramas principales:
@@ -88,7 +80,7 @@ Este proyecto utiliza `prisma` para interactuar con una base de datos `postgresq
 
 ### Directorio `features`
 
-Un sistema basado en el `file system` de `node` para construir funcionalidades del bot. Cada subdirectorio encapsula una funcionalidad, que puede depender de comandos `slash`, componentes o eventos del cliente de Discord.
+Un sistema basado en el `file system` de `node` para construir funcionalidades del bot. Cada subdirectorio encapsula una funcionalidad, que puede depender de comandos `slash`, componentes o eventos del cliente de `discord.js`.
 
 #### Estructura
 
@@ -105,7 +97,7 @@ Un subdirectorio de `features` debe contener al menos uno de los siguientes arch
 
 - `command.*.ts` → Para registrar comandos `slash` de Discord
 - `component.*.ts` → Para crear componentes de Discord
-- `handler.*.ts` → Para responder a eventos del cliente de Discord
+- `handler.*.ts` → Para responder a eventos del cliente de `discord.js`
 
 El resto de archivos y directorios son arbitrarios. Puedes aprovechar esto para separar funcionalidades complejas en módulos más pequeños.
 
@@ -117,8 +109,6 @@ Permite registrar un comando `slash` de Discord. Debe incluir un `export default
 - `handler` → La función a invocar cuando se ejecute el comando
 
 ```ts
-// src/features/test/command.demoCommand.ts
-
 import { SlashCommandBuilder } from "discord.js"
 
 import { createCommand } from "~/utils"
@@ -140,8 +130,6 @@ Permite crear un componente de Discord. Debe incluir un `export default` de la f
 - `handler` → La función a invocar cuando se interactúe con el componente
 
 ```ts
-// src/features/test/component.demoButton.ts
-
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js
 
 import { createCommand } from "~/utils"
@@ -158,11 +146,20 @@ export default createComponent(builder, (interaction) => {
 })
 ```
 
-Los componentes se envían como respuesta a la interación de un usuario con un comando `slash`:
+Los componentes se envían como respuesta a la interación de un usuario con un comando `slash` o con otro componente. Por ejemplo, en la siguiente feature:
+
+```
+src
+└── features
+    └── demo
+        ├── command.demoCommand.ts
+        └── component.demoButton.ts
+```
+
+El bot enviará el componente `demoButton` desde el comando `demoCommand` así:
 
 ```ts
 // src/features/test/command.demoCommand.ts
-// src/features/test/component.demoButton.ts
 
 import { SlashCommandBuilder } from "discord.js"
 
@@ -176,14 +173,14 @@ const builder = new SlashCommandbuilder()
 
 export default createComponent(builder, async (interaction) => {
   interaction.reply({
-    components: [componentDemoButton.builder]
+    components: [componentDemoButton.builder],
   })
 })
 ```
 
-> Si añades nuevos builders de comandos o modificas los ya existentes, deberás sincronizarlos con la API de Discord mediante el comando `sync`. El proceso de sincronizado debe pasar por la cache de Discord, por lo que tardará un rato en mostrarse en la aplicación.
+Si añades nuevos builders de comandos o modificas los ya existentes, deberás sincronizarlos con la API de Discord mediante el comando `sync`. El proceso de sincronizado debe pasar por la cache de Discord, por lo que tardará un rato en mostrarse en la aplicación.
 
-> Sincronizar comandos solo actualiza la información de los builders. Los cambios en los handlers no dependen de la API de Discord, por lo que no requiren el comando `sync` y se actualizan cada vez que se guarda el archivo de comando.
+Sincronizar comandos solo actualiza la información de los builders. Los cambios en los handlers no dependen de la API de Discord, por lo que no requiren el comando `sync` y se actualizan cada vez que se guarda el archivo de comando.
 
 ##### `handler.*.ts`
 
@@ -263,7 +260,7 @@ El proyecto requiere un archivo `.env` para funcionar correctamente. Puedes clon
 
 ### Acceder a las variables de entorno
 
-Utilizamos `zod`, entre otras cosas, para asegurar que las variables de entorno existen y tienen un formato correcto. Preferimos esto a declarar las variables de entorno en un archivo `.d.ts` porque `zod` devuelve valores type-safe, así tenemos declaración y validación en un mismo sitio.
+Utilizamos `zod`, entre otras cosas, para asegurar que las variables de entorno existen y tienen un formato correcto.
 
 ```ts
 // ⛔ Evita usar `process.env`
@@ -292,4 +289,8 @@ import type { Handler } from "~/types
 
 ### Linting y formato
 
-Este proyecto implementa `eslint` como linter, e integra `prettier` para mostrar errores en el formato. Recomendamos instalar los plugins de `eslint` y `prettier` en tu IDE para una mejor experiencia. Un git hook de `husky` se ejecuta antes de cada commit para resolver automáticamente todos los problemas de `eslint`.
+Este proyecto implementa `eslint` como linter, e integra `prettier` para mostrar errores en el formato. Recomendamos instalar los plugins de `eslint` y `prettier` en tu IDE para una mejor experiencia. Un git hook de `husky` se ejecuta antes de cada push para resolver automáticamente todos los problemas de `eslint`.
+
+### Conventional Commits
+
+Este proyecto sigue la especificación de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). Un git hook de `husky` se ejecuta antes de cada push para asegurar que los mensajes de tus commits siguen la especificación.
