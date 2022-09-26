@@ -117,10 +117,12 @@ const builder = new SlashCommandbuilder()
   .setName("marco")
   .setDescription("Responde sin mucho entusiasmo")
 
-export default createComponent(builder, async (interaction) => {
+export default createCommand(builder, async (interaction) => {
   interaction.reply("Polo")
 })
 ```
+
+Al recibir una interacción, la aplicación buscará y ejecutará el `handler` correspondiente. Al igual que en `discord.js`, para acceder a determinadas propiedades necesitarás comprobar el tipo de interacción métodos como `interaction.isChatInputCommand` o `interaction.isButton`.
 
 ##### `component.*.ts`
 
@@ -132,7 +134,7 @@ Permite crear un componente de Discord. Debe incluir un `export default` de la f
 ```ts
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js
 
-import { createCommand } from "~/utils"
+import { createComponent } from "~/utils"
 
 const builder = new ActionRowBuilder().addComponents(
   new ButtonBuilder()
@@ -172,6 +174,8 @@ const builder = new SlashCommandbuilder()
   .setDescription("Responde con un botón")
 
 export default createComponent(builder, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return
+
   interaction.reply({
     components: [componentDemoButton.builder],
   })

@@ -13,6 +13,8 @@ const builder = new SlashCommandBuilder()
   .setDescription("Devuelve un enlace a la lista de iconos oficial de Dreams.")
 
 export default createCommand(builder, (interaction) => {
+  if (!interaction.isChatInputCommand()) return
+
   interaction.reply({
     ephemeral: true,
     content,

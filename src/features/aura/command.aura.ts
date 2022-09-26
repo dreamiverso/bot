@@ -9,6 +9,8 @@ const builder = new SlashCommandBuilder()
   .setDescription("Cambia tu aura")
 
 export default createCommand(builder, (interaction) => {
+  if (!interaction.isChatInputCommand()) return
+
   interaction.reply({
     ephemeral: true,
     components: [auraPicker.builder],

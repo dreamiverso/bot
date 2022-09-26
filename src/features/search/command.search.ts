@@ -23,6 +23,8 @@ const builder = new SlashCommandBuilder()
   )
 
 export default createCommand(builder, (interaction) => {
+  if (!interaction.isChatInputCommand()) return
+
   interaction.reply({
     ephemeral: true,
     content: "TODO",

@@ -1,18 +1,21 @@
 import {
+  AutocompleteInteraction,
   ClientEvents,
   CommandInteraction,
   ComponentBuilder,
+  ContextMenuCommandBuilder,
   Interaction,
   ModalBuilder,
   SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js"
 
 /**
- * TODO: Documentation
- * TODO: The `Builder` generic is here because I think we could use it to narrow the interaction type
+ * TODO: TSDoc
  */
 export function createComponent<
-  Builder extends ComponentBuilder | ModalBuilder
+  Builder extends ComponentBuilder | ModalBuilder | ContextMenuCommandBuilder
 >(builder: Builder, handler: (interaction: Interaction) => void) {
   const builderString = JSON.stringify(builder.toJSON())
   const customIdMatch = builderString.match(/(?<="custom_id":")(.+?)(?=",)/g)
@@ -31,14 +34,20 @@ export function createComponent<
 export type CreateComponent = typeof createComponent
 export type CreateComponentResult = ReturnType<CreateComponent>
 
-/**
- * TODO: Documentation
- * TODO: The `Builder` generic is here because I think subcommands receive another type of interaction in its handler
- * so we should do some conditional logic with the builder type
- */
-export function createCommand<Builder extends SlashCommandBuilder>(
+type SlashCommandBuilderWithoutSubcommands = Omit<
+  SlashCommandBuilder,
+  "addSubcommand" | "addSubcommandGroup"
+>
+
+export function createCommand<
+  Builder extends
+    | SlashCommandBuilder
+    | SlashCommandBuilderWithoutSubcommands
+    | SlashCommandSubcommandsOnlyBuilder
+    | SlashCommandOptionsOnlyBuilder
+>(
   builder: Builder,
-  handler: (interaction: CommandInteraction) => void
+  handler: (interaction: CommandInteraction | AutocompleteInteraction) => void
 ) {
   return {
     builder,
@@ -46,11 +55,14 @@ export function createCommand<Builder extends SlashCommandBuilder>(
   }
 }
 
+/**
+ * TODO: TSDoc
+ */
 export type CreateCommand = typeof createCommand
 export type CreateCommandResult = ReturnType<CreateCommand>
 
 /**
- * TODO: Documentation
+ * TODO: TSDoc
  */
 export function createHandler<Event extends keyof ClientEvents>(
   event: Event,

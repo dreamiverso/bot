@@ -13,6 +13,8 @@ const builder = new SlashCommandBuilder()
   .setDescription("Consigue un enlace para invitar a usuarios al servidor")
 
 export default createCommand(builder, (interaction) => {
+  if (!interaction.isChatInputCommand()) return
+
   interaction.reply({
     ephemeral: true,
     content,
