@@ -27,7 +27,7 @@ export function createComponent<
   return {
     builder,
     handler,
-    customId: customIdMatch[0],
+    ids: customIdMatch,
   }
 }
 

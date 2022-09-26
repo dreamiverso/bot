@@ -37,13 +37,10 @@ async function readContent<T>(
 }
 
 async function getComponents() {
-  return readContent<CreateComponentResult>(
-    "component",
-    ({ handler, customId }) => {
-      if (!customId) throw Error("Missing component `customId`")
-      componentsMap.set(customId, handler)
-    }
-  )
+  return readContent<CreateComponentResult>("component", ({ handler, ids }) => {
+    if (!ids.length) throw Error("Missing component `ids`")
+    ids.forEach((id) => componentsMap.set(id, handler))
+  })
 }
 
 async function getCommands() {
@@ -84,7 +81,7 @@ function initHandlers(client: Client<true>) {
 
 function initInteractions(client: Client<true>) {
   client.on("interactionCreate", async (interaction) => {
-    if (interaction.isCommand()) {
+    if (interaction.isCommand() || interaction.isAutocomplete()) {
       const command = commandsMap.get(interaction.commandName)
       if (!command) throw Error(`Could not find command ${command}`)
 
@@ -115,7 +112,7 @@ function initInteractions(client: Client<true>) {
     } else {
       notifyError(client, {
         name: "Unhandled interaction type",
-        value: JSON.stringify(interaction.toJSON()),
+        value: JSON.stringify(interaction),
       })
     }
   })
