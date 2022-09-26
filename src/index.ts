@@ -3,7 +3,7 @@ import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 import { env, sendMessageToChannel, constants } from "~/utils"
 import { bootstrap } from "~/features"
 
-console.log("Creating new client…")
+console.log("⏳  Creating new client…")
 
 export const client = new Client({
   intents: [
@@ -16,8 +16,6 @@ export const client = new Client({
 })
 
 client.once("ready", async (client) => {
-  console.log("client is ready", env.NODE_ENV)
-
   client.user.setPresence({
     activities: [
       {
@@ -31,14 +29,14 @@ client.once("ready", async (client) => {
 
   client.emit("ready", client)
 
-  console.log("Bot is alive!!!")
+  console.log("🤖  Beep, boop!")
 
   if (env.NODE_ENV !== "production") return
 
   sendMessageToChannel(
     client,
     constants.CHANNEL_ID.BOT_DEBUG,
-    `Acaban de enchufarme (${new Date().toISOString()})`
+    `Nueva conexión (${new Date().toISOString()})`
   )
 })
 
