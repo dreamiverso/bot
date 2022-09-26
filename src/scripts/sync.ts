@@ -7,7 +7,7 @@ import glob from "fast-glob"
 import { CreateCommandResult, env } from "~/utils"
 
 const featuresRoute = path.join(__dirname, "../features")
-const commandsFiles = glob.sync(`${featuresRoute}/**/commands/*.ts`)
+const commandsFiles = glob.sync(`${featuresRoute}/**/command.*.ts`)
 
 const body = commandsFiles.map((route) => {
   const command = require(route).default as CreateCommandResult
