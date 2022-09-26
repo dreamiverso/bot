@@ -29,6 +29,8 @@ client.once("ready", async (client) => {
 
   await bootstrap(client)
 
+  client.emit("ready", client)
+
   console.log("Bot is alive!!!")
 
   if (env.NODE_ENV !== "production") return
