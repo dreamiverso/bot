@@ -70,7 +70,6 @@ src
 ├── db
 ├── features
 ├── scripts
-├── types
 └── utils
 ```
 
@@ -234,10 +233,6 @@ Todas las invocaciones de los handlers de eventos y comandos se envuelven en un 
 ### Directorio `scripts`
 
 Contiene diferentes scripts ejecutables mediante comandos definidos en el `package.json`.
-
-### Directorio `types`
-
-Un barrel export con tipos que pueden ser usados por cualquier otro archivo del proyecto.
 
 ```ts
 import { CommandBuilder, CommandHandler } from "~/types"
