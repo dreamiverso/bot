@@ -1,7 +1,7 @@
 import { Window } from "happy-dom"
 import { z } from "zod"
 
-import { createHandler, db, cron } from "~/utils"
+import { createHandler, db, cron, env } from "~/utils"
 
 const window = new Window()
 const schema = z.object({ length: z.number() })
@@ -10,10 +10,16 @@ const ROUTINE_ID = "indreams-icons"
 const ICONS_URL = "https://docs.indreams.me/en/help/getting-started/icons"
 
 /**
+ * Schedule a cron job every minute on development
+ * and every day on production
+ */
+const schedule = env.NODE_ENV === "development" ? "* * * * *" : "0 0 * * *"
+
+/**
  * Creates a cron job that notifies mods when new icons are added to Dreams.
  */
 export default createHandler("ready", async () => {
-  cron("0 0 * * *", async () => {
+  cron(schedule, async () => {
     const response = await fetch(ICONS_URL)
     const data = await response.text()
 

@@ -1,9 +1,15 @@
-import { createHandler, cron } from "~/utils"
+import { createHandler, cron, env } from "~/utils"
 
 import { getIndreamsUserData } from "./utils"
 
+/**
+ * Schedule a cron job every minute on development
+ * and every hour on production
+ */
+const schedule = env.NODE_ENV === "development" ? "* * * * *" : "0 * * * *"
+
 export default createHandler("ready", async (client) => {
-  cron("0 * * * *", async () => {
+  cron(schedule, async () => {
     console.log("updating all autoaura subscriptions every hour")
 
     const intents = await db.autoauraIntent.findMany()
