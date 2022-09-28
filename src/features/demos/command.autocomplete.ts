@@ -3,8 +3,8 @@ import { SlashCommandBuilder } from "discord.js"
 import { createCommand } from "~/utils"
 
 const builder = new SlashCommandBuilder()
-  .setName("guide")
-  .setDescription("Search discordjs.guide!")
+  .setName("autocomplete")
+  .setDescription("Demo de la API de autocomplete")
   .addStringOption((option) =>
     option
       .setName("query")

@@ -4,8 +4,8 @@ import { createCommand, wait } from "~/utils"
 
 // prettier-ignore
 const builder = new SlashCommandBuilder()
-	.setName('questionnaire')
-	.setDescription('Asks you a series of questions!')
+	.setName('options')
+	.setDescription('Demo de la API de options')
 	.addStringOption(option => option.setName('input').setDescription('Your name?'))
 	.addBooleanOption(option => option.setName('bool').setDescription('True or False?'))
 	.addUserOption(option => option.setName('target').setDescription('Closest friend?'))

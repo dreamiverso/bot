@@ -3,8 +3,8 @@ import { SlashCommandBuilder } from "discord.js"
 import { createCommand } from "~/utils"
 
 const builder = new SlashCommandBuilder()
-  .setName("info")
-  .setDescription("Get info about a user or a server!")
+  .setName("subcommands")
+  .setDescription("Demo de la API de subcommands")
   .addSubcommand((subcommand) =>
     subcommand
       .setName("user")

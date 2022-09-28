@@ -3,12 +3,12 @@ import { SlashCommandBuilder } from "discord.js"
 import { createCommand, wait } from "~/utils"
 
 const builder = new SlashCommandBuilder()
-  .setName("gif")
-  .setDescription("Sends a random gif!")
+  .setName("choices")
+  .setDescription("Demo de la API de choices")
   .addStringOption((option) =>
     option
-      .setName("category")
-      .setDescription("The gif category")
+      .setName("option")
+      .setDescription("Option description")
       .setRequired(true)
       .addChoices(
         { name: "Funny", value: "gif_funny" },

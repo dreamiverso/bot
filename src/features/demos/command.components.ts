@@ -8,7 +8,7 @@ import componentSelect from "./component.select"
 
 const builder = new SlashCommandBuilder()
   .setName("components")
-  .setDescription("Sends a demo component")
+  .setDescription("Demo de componentes")
   .addStringOption((option) =>
     option
       .setName("component")
