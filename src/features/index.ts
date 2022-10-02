@@ -15,10 +15,7 @@ import {
 
 const componentsMap = new Map<string, CreateComponentResult["handler"]>()
 const commandsMap = new Map<string, CreateCommandResult["handler"]>()
-const handlersMap = new Map<
-  CreateHandlerResult["event"],
-  CreateHandlerResult["handler"][]
->()
+const handlersMap = new Map<CreateHandlerResult["event"], CreateHandlerResult["handler"][]>() // prettier-ignore
 
 /**
  * Reads content of files.
@@ -32,7 +29,7 @@ async function readContent<T>(
 
   files.forEach((file) => {
     const content: T = require(file).default
-    return callback(content)
+    if (content) return callback(content)
   })
 }
 
