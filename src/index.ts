@@ -7,24 +7,32 @@ console.log("⏳  Creating new client…")
 
 export const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildInvites,
     GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildScheduledEvents,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.Guilds,
     GatewayIntentBits.MessageContent,
   ],
-})
-
-client.once("ready", async (client) => {
-  client.user.setPresence({
+  presence: {
     activities: [
       {
         type: ActivityType.Playing,
         name: "Dreams™",
       },
     ],
-  })
+  },
+})
 
+client.once("ready", async (client) => {
   await bootstrap(client)
 
   client.emit("ready", client)
