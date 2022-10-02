@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js"
+import { GuildMemberRoleManager, SlashCommandBuilder } from "discord.js"
 import { createCommand } from "~/utils"
 
 import { handleClearSubcommand } from "./handleClearSubcommand"
@@ -7,6 +7,7 @@ import { handleSendSubcommand } from "./handleSendSubcommand"
 const builder = new SlashCommandBuilder()
   .setName("mod")
   .setDescription("Comandos especiales del equipo de moderación")
+  .setDefaultMemberPermissions(32)
   .addSubcommand((subcommand) =>
     subcommand
       .setName("limpiar")
@@ -37,6 +38,21 @@ const builder = new SlashCommandBuilder()
 
 export default createCommand(builder, async (interaction) => {
   if (!interaction.isChatInputCommand()) return
+
+  if (!(interaction.member?.roles instanceof GuildMemberRoleManager)) {
+    throw Error("Member roles missing or not GuildMemberRoleManager")
+  }
+
+  const isMod = interaction.member.roles.cache.find(
+    (role) => role.name === "Moderadores"
+  )
+
+  if (!isMod) {
+    return interaction.reply({
+      content: "¡No puedes usar este comando!",
+      ephemeral: true,
+    })
+  }
 
   switch (interaction.options.getSubcommand()) {
     case "limpiar":
