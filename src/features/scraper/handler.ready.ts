@@ -1,3 +1,4 @@
+import got from "got"
 import { Window } from "happy-dom"
 import { z } from "zod"
 
@@ -20,8 +21,7 @@ const schedule = env.NODE_ENV === "development" ? "* * * * *" : "0 0 * * *"
  */
 export default createHandler("ready", async () => {
   cron(schedule, async () => {
-    const response = await fetch(ICONS_URL)
-    const data = await response.text()
+    const data = await got(ICONS_URL).text()
 
     window.document.body.innerHTML = data
 
