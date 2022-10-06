@@ -22,7 +22,7 @@ export async function handleClearSubcommand(
     })
   }
 
-  await interaction.channel.bulkDelete(amount)
+  await interaction.channel.bulkDelete(amount, true)
 
   return interaction.reply({
     content: `¡Hecho! 🥳 He eliminado ${amount} ${
