@@ -12,15 +12,16 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 
 ## Comandos
 
-| Comando   | Desscripción                                                    |
-| --------- | --------------------------------------------------------------- |
-| `prepare` | Se ejecuta automáticamente. Configura `husky`.                  |
-| `dev`     | Inicia el proyecto en modo desarrollo.                          |
-| `sync`    | Sincroniza los datos del bot con la API de Discord.             |
-| `lint`    | Ejecuta ESLint para formatear y solventar errores en el código. |
-| `build`   | Crea una versión de producción para ejecutar en local.          |
-| `start`   | Inicia una versión de producción generada previamente.          |
-| `check`   | Comprueba la validez de los tipos de TypeScript.                |
+| Comando         | Desscripción                                                    |
+| --------------- | --------------------------------------------------------------- |
+| `prepare`       | Se ejecuta automáticamente. Configura `husky`.                  |
+| `dev`           | Inicia el proyecto en modo desarrollo.                          |
+| `lint`          | Ejecuta ESLint para formatear y solventar errores en el código. |
+| `build`         | Crea una versión de producción para ejecutar en local.          |
+| `start`         | Inicia una versión de producción generada previamente.          |
+| `check`         | Comprueba la validez de los tipos de TypeScript.                |
+| `commands:nuke` | Elimina los comandos del bot de la API de Discord.              |
+| `commands:sync` | Sincroniza los comandos del bot con la API de Discord.          |
 
 ## Workflows
 
