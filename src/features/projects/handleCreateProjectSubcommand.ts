@@ -1,12 +1,16 @@
-import slugify from "@sindresorhus/slugify"
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 
 import { visibilityChoices } from "./utils/choices"
+import { formatChannelName } from "./utils/formatChannelName"
 import componentCreateProjectButtons from "./component.createProjectButtons"
 
 export async function handleCreateProjectSubcommand(
   interaction: ChatInputCommandInteraction
 ) {
+  if (!interaction.guild) {
+    throw Error("This is a guild command")
+  }
+
   const name = interaction.options.getString("nombre")
   const visibility = interaction.options.getString("visibilidad") as
     | keyof typeof visibilityChoices
@@ -26,8 +30,26 @@ export async function handleCreateProjectSubcommand(
     })
   }
 
-  const channelName = slugify(name.trim())
-  const roleName = `P0 - ${name.trim()}`
+  const channelName = formatChannelName(name.trim())
+  const roleName = name.trim()
+
+  if (!channelName) {
+    return interaction.reply({
+      content: "¡Ups! No podemos crear un canal con ese nombre 🤔",
+      ephemeral: true,
+    })
+  }
+
+  const exists = interaction.guild.channels.cache.find(
+    (channel) => channel.name === channelName
+  )
+
+  if (exists) {
+    return interaction.reply({
+      content: "¡Ups! Ya existe un proyecto con ese nombre 🤔",
+      ephemeral: true,
+    })
+  }
 
   const embed = new EmbedBuilder().setColor(0x8000ff).addFields(
     {
