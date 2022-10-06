@@ -9,13 +9,14 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
-    "sync": "cross-env NODE_ENV=production tsx src/scripts/sync.ts",
     "lint": "eslint --fix",
     "build:db": "prisma generate",
     "build:ts": "tsc",
     "build": "yarn run-p build:*",
     "start": "cross-env NODE_ENV=production node .",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "commands:nuke": "cross-env NODE_ENV=production tsx src/scripts/reset.ts",
+    "commands:sync": "cross-env NODE_ENV=production tsx src/scripts/sync.ts"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
