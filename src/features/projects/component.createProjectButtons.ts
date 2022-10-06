@@ -75,7 +75,7 @@ export default createComponent(builder, async (interaction) => {
       await interaction.update({
         embeds: [],
         components: [],
-        content: `⏳ Creando canal de proyecto… (${visibility})`,
+        content: "⏳ Creando proyecto…",
       })
 
       const channel = await interaction.guild.channels.create({
@@ -97,7 +97,7 @@ export default createComponent(builder, async (interaction) => {
         embeds: [],
         components: [],
         content: stripIndent`
-          ✅ ¡Canal de proyecto creado! (${visibility})
+          ✅ ¡Canal de proyecto creado!
           ✅ ¡Rol de proyecto creado y asignado!
           ¡Todo listo! 🥳 Disfruta del nuevo proyecto
         `,
