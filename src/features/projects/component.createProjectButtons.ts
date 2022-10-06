@@ -64,6 +64,8 @@ export default createComponent(builder, async (interaction) => {
     }
   )
 
+  // TODO: handle project visibility
+
   switch (interaction.customId) {
     case ID.CANCEL:
       return interaction.update({
