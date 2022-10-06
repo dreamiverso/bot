@@ -19,9 +19,13 @@ const body = commandsFiles
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_BOT_TOKEN)
 
 rest
-  .put(Routes.applicationCommands(env.DISCORD_APPLICATION_ID), {
-    body,
-  })
+  .put(
+    Routes.applicationGuildCommands(
+      env.DISCORD_APPLICATION_ID,
+      env.DISCORD_SERVER_ID
+    ),
+    { body }
+  )
   .then(() => {
     console.log(`✅  Synced ${body.length} application commands.`)
   })
