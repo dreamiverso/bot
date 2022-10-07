@@ -7,8 +7,7 @@ import {
   GuildMemberRoleManager,
 } from "discord.js"
 
-import { createComponent } from "~/utils"
-import { CATEGORY_ID } from "~/utils/constants"
+import { createComponent, constants } from "~/utils"
 
 enum ID {
   CREATE = "confirmCreateProject",
@@ -83,7 +82,7 @@ export default createComponent(builder, async (interaction) => {
       const channel = await interaction.guild.channels.create({
         name: channelName,
         type: ChannelType.GuildText,
-        parent: CATEGORY_ID.PROJECTS,
+        parent: constants.CATEGORY_ID.PROJECTS,
         topic: `Proyecto creado por ${interaction.user.username}`,
       })
 
@@ -107,7 +106,7 @@ export default createComponent(builder, async (interaction) => {
 
       return channel.send({
         content: stripIndent`
-          ¡Aquí está, "${role}"! ¡Llena este canal de creatividad!
+          ¡Aquí está, ${role}! ¡Llena este canal de creatividad!
           Puedes editar el nombre, el tema y los miembros de este proyecto con los comandos de \`/proyecto\`.
         `,
       })

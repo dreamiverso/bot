@@ -1,12 +1,19 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
+import {
+  AutocompleteInteraction,
+  CommandInteraction,
+  EmbedBuilder,
+} from "discord.js"
 
-import { visibilityChoices } from "./utils/choices"
-import { formatChannelName } from "./utils/formatChannelName"
+import { constants } from "~/utils"
+
+import { visibilityChoices, formatChannelName } from "./utils"
 import componentCreateProjectButtons from "./component.createProjectButtons"
 
 export async function handleCreateProjectSubcommand(
-  interaction: ChatInputCommandInteraction
+  interaction: CommandInteraction | AutocompleteInteraction
 ) {
+  if (!interaction.isChatInputCommand()) return
+
   if (!interaction.guild) {
     throw Error("This is a guild command")
   }
@@ -31,7 +38,6 @@ export async function handleCreateProjectSubcommand(
   }
 
   const channelName = formatChannelName(name.trim())
-  const roleName = name.trim()
 
   if (!channelName) {
     return interaction.reply({
@@ -50,6 +56,12 @@ export async function handleCreateProjectSubcommand(
       ephemeral: true,
     })
   }
+
+  const projects = interaction.guild.channels.cache.filter(
+    (channel) => channel.parentId === constants.CATEGORY_ID.PROJECTS
+  )
+
+  const roleName = `P${projects.size + 1} - ${name.trim()}`
 
   const embed = new EmbedBuilder().setColor(0x8000ff).addFields(
     {
