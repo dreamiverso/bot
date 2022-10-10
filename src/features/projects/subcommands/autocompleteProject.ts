@@ -1,17 +1,13 @@
+import { AutocompleteInteraction, GuildMemberRoleManager } from "discord.js"
+
 import {
-  AutocompleteInteraction,
-  CommandInteraction,
-  GuildMemberRoleManager,
-} from "discord.js"
+  projectRolePrefix,
+  removeProjectRolePrefix,
+} from "./removeProjectRolePrefix"
 
-import { formatChannelName } from "./utils"
-
-const projectRolePrefix = new RegExp(/(P[0-9]+) - /)
-
-export async function handleEditProjectSubcommand(
-  interaction: CommandInteraction | AutocompleteInteraction
+export async function autocompleteProject(
+  interaction: AutocompleteInteraction
 ) {
-  if (!interaction.isAutocomplete()) return
   if (!interaction.guild) return
   if (!interaction.member) return
 
@@ -22,23 +18,18 @@ export async function handleEditProjectSubcommand(
   const value = interaction.options.getFocused()
 
   const validProjects = interaction.member.roles.cache.reduce<
+    // TODO: hay un tipo de esto fijísimo
     { name: string; value: string }[]
   >((accumulator, role) => {
     if (projectRolePrefix.test(role.name)) {
-      const projectName = role.name.replace(projectRolePrefix, "")
+      const projectName = removeProjectRolePrefix(role.name)
 
       if (!value) {
-        accumulator.push({
-          name: projectName,
-          value: formatChannelName(projectName),
-        })
+        accumulator.push({ name: projectName, value: role.name })
       } else if (
         projectName.toLocaleLowerCase().startsWith(value.toLocaleLowerCase())
       ) {
-        accumulator.push({
-          name: projectName,
-          value: formatChannelName(projectName),
-        })
+        accumulator.push({ name: projectName, value: role.name })
       }
     }
 

@@ -6,17 +6,14 @@ import {
 
 import { constants } from "~/utils"
 
-import { visibilityChoices, formatChannelName } from "./utils"
-import componentCreateProjectButtons from "./component.createProjectButtons"
+import { visibilityChoices, formatChannelName } from "../utils"
+import componentCreateProjectButtons from "../component.createProjectButtons"
 
-export async function handleCreateProjectSubcommand(
+export async function create(
   interaction: CommandInteraction | AutocompleteInteraction
 ) {
   if (!interaction.isChatInputCommand()) return
-
-  if (!interaction.guild) {
-    throw Error("This is a guild command")
-  }
+  if (!interaction.guild) return
 
   const name = interaction.options.getString("nombre")
   const visibility = interaction.options.getString("visibilidad") as
