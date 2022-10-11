@@ -103,8 +103,12 @@ export async function remove(
 
     await interaction.reply({
       ephemeral: true,
-      content: "Hace falta votar, quieres votar?",
       components: [confirmDeletionVoteBuilder],
+      content: oneLine`
+        Como no eres el único miembro de este proyecto,
+        hace falta someter a votación su eliminación.
+        ¿Quieres abrir una votación?
+      `,
     })
 
     try {
@@ -125,8 +129,9 @@ export async function remove(
       if (buttonInteraction.customId !== ID.VOTE_CONFIRM) return
 
       interaction.editReply({
-        content: "Abriendo votación…",
         components: [],
+        embeds: [],
+        content: "Abriendo votación…",
       })
 
       const embed = new EmbedBuilder().setColor(0x8000ff).addFields(
@@ -171,6 +176,8 @@ export async function remove(
               value: count.toString(),
             }
           )
+
+          await message.reactions.removeAll()
 
           if (count < minimum) {
             return message.edit({
