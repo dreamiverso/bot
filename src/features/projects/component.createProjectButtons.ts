@@ -9,6 +9,8 @@ import {
 
 import { createComponent, constants } from "~/utils"
 
+import { visibilityChoices } from "./utils"
+
 enum ID {
   CREATE = "confirmCreateProject",
   CANCEL = "cancelCreateProject",
@@ -63,8 +65,6 @@ export default createComponent(builder, async (interaction) => {
     }
   )
 
-  // TODO: handle project visibility
-
   switch (interaction.customId) {
     case ID.CANCEL:
       return interaction.update({
@@ -91,6 +91,15 @@ export default createComponent(builder, async (interaction) => {
         color: "#95a5a6",
         mentionable: true,
       })
+
+      if (visibility === visibilityChoices.archived) {
+        await channel.permissionOverwrites.create(
+          channel.guild.roles.everyone,
+          { ViewChannel: false }
+        )
+
+        await channel.permissionOverwrites.create(role, { ViewChannel: true })
+      }
 
       await interaction.member.roles.add(role)
 
