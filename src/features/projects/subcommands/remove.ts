@@ -1,7 +1,14 @@
 import { oneLine } from "common-tags"
-import { AutocompleteInteraction, CommandInteraction } from "discord.js"
+import {
+  ActionRowBuilder,
+  AutocompleteInteraction,
+  ButtonBuilder,
+  ButtonStyle,
+  CommandInteraction,
+  ComponentType,
+} from "discord.js"
 
-import { constants, pipe } from "~/utils"
+import { collectComponentInteraction, constants, pipe } from "~/utils"
 
 import { formatChannelName } from "../utils"
 
@@ -9,6 +16,22 @@ import {
   projectRolePrefix,
   removeProjectRolePrefix,
 } from "./removeProjectRolePrefix"
+
+enum ID {
+  DELETE = "confirmDeleteProject",
+  CANCEL = "cancelDeleteProject",
+}
+
+const builder = new ActionRowBuilder<ButtonBuilder>().addComponents(
+  new ButtonBuilder()
+    .setCustomId(ID.DELETE)
+    .setStyle(ButtonStyle.Danger)
+    .setLabel("Eliminar proyecto"),
+  new ButtonBuilder()
+    .setCustomId(ID.CANCEL)
+    .setStyle(ButtonStyle.Secondary)
+    .setLabel("Cancelar")
+)
 
 export async function remove(
   interaction: CommandInteraction | AutocompleteInteraction
@@ -54,42 +77,73 @@ export async function remove(
     // TODO: votar para eliminar
     return interaction.reply({
       ephemeral: true,
-      content: `No puedo hacer eso todavía! Hay que votar para eliminar este proyecto. Miembros: ${role.members.size}, mínimo de votos: ${minimum}`,
+      content: oneLine`
+        No puedo hacer eso todavía! Hay que votar para eliminar este proyecto.
+        Miembros: ${role.members.size}, mínimo de votos: ${minimum}`,
     })
   }
 
-  const response = await interaction.reply({
+  await interaction.reply({
     ephemeral: true,
-    content: `Estás a punto de borrar el proyecto ${channel.name} y el rol ${role.name}. ¡Esta acción es irreversible! ¿Estás seguro?`,
+    components: [builder],
+    content: oneLine`
+      Estás a punto de borrar el proyecto ${channel.name} y el rol ${role}.
+      ¡Esta acción es irreversible! ¿Estás seguro?
+    `,
   })
 
-  // TODO: Verify that user really wants to do this
+  try {
+    const buttonInteraction = await collectComponentInteraction(interaction, {
+      ids: [ID.DELETE, ID.CANCEL],
+      componentType: ComponentType.Button,
+      time: 15000,
+    })
 
-  const deleteChannelPromise = channel.delete("Deleted via slash command")
-  const deleteRolePromise = role.delete("Deleted via slash command")
+    switch (buttonInteraction.customId) {
+      case ID.DELETE: {
+        const deleteChannelPromise = channel.delete("Deleted via slash command")
+        const deleteRolePromise = role.delete("Deleted via slash command")
 
-  const otherProjectRoles = channel.guild.roles.cache.filter(
-    ({ name }) => projectRolePrefix.test(name) && name !== role.name
-  )
+        const otherProjectRoles = channel.guild.roles.cache
+          .filter(
+            ({ name }) => projectRolePrefix.test(name) && name !== role.name
+          )
+          .sort((a, b) => a.name.localeCompare(b.name))
 
-  /**
-   * This is required because apparently the second argument in `Collection.map`
-   * is not a number but a string
-   */
-  let index = 0
-  const renameRolesPromise = otherProjectRoles.map((role) => {
-    const nameWithoutPrefix = removeProjectRolePrefix(role.name)
-    const newName = `P${index + 1} - ${nameWithoutPrefix}`
-    index++
+        /**
+         * This is required because apparently the second argument in `Collection.map`
+         * is not a number but a string
+         */
+        let index = 1
+        const renameRolesPromise = otherProjectRoles.map((role) => {
+          const name = role.name.replace(projectRolePrefix, `P${index++} - `)
+          return role.setName(name)
+        })
 
-    return role.setName(newName)
-  })
+        await Promise.all([
+          deleteChannelPromise,
+          deleteRolePromise,
+          renameRolesPromise,
+        ])
 
-  await Promise.all([
-    deleteChannelPromise,
-    deleteRolePromise,
-    renameRolesPromise,
-  ])
-
-  console.log("ya estaría")
+        return buttonInteraction.update({
+          embeds: [],
+          components: [],
+          content: "Se ha eliminado el proyecto correctamente",
+        })
+      }
+      case ID.CANCEL:
+        return buttonInteraction.update({
+          embeds: [],
+          components: [],
+          content: "Has cancelado la eliminación del proyecto",
+        })
+    }
+  } catch (error) {
+    await interaction.editReply({
+      embeds: [],
+      components: [],
+      content: "No has respondido ups",
+    })
+  }
 }

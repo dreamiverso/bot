@@ -38,7 +38,7 @@ export async function create(
 
   if (!channelName) {
     return interaction.reply({
-      content: "¡Ups! No podemos crear un canal con ese nombre 🤔",
+      content: "¡Ups! No puedo crear un canal con ese nombre 🤔",
       ephemeral: true,
     })
   }

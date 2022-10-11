@@ -1,4 +1,5 @@
 export * as constants from "./constants"
+export * from "./collector"
 export * from "./cron"
 export * from "./db"
 export * from "./env"
