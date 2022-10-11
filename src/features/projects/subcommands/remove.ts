@@ -4,7 +4,6 @@ import {
   AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
-  Channel,
   ChannelType,
   CommandInteraction,
   ComponentType,
@@ -13,7 +12,7 @@ import {
   TextChannel,
 } from "discord.js"
 
-import { collectComponentInteraction, constants, pipe, wait } from "~/utils"
+import { collectComponentInteraction, constants, wait } from "~/utils"
 
 import { formatChannelName } from "../utils"
 
@@ -116,7 +115,9 @@ export async function remove(
     throw Error("Unexpected channel type")
   }
 
-  // This is required to foce a cache update from Discord APIs
+  /**
+   * This is required to force a cache update from Discord APIs
+   */
   await channel.guild.members.fetch({ force: true })
 
   const role = channel.guild.roles.cache.find((role) => role.name === roleName)
