@@ -8,18 +8,15 @@ import {
   CommandInteraction,
   ComponentType,
   EmbedBuilder,
-  Role,
-  TextChannel,
 } from "discord.js"
 
 import { collectComponentInteraction, constants, wait } from "~/utils"
 
-import { formatChannelName } from "../utils"
-
 import {
-  projectRolePrefix,
+  formatChannelName,
+  removeProject,
   removeProjectRolePrefix,
-} from "./removeProjectRolePrefix"
+} from "../utils"
 
 enum ID {
   VOTE_CONFIRM = "confirmVoteProjectDelete",
@@ -51,31 +48,6 @@ const confirmDeletionVoteBuilder =
       .setStyle(ButtonStyle.Secondary)
       .setLabel("Cancelar")
   )
-
-async function removeProject(channel: TextChannel, role: Role) {
-  const deleteChannelPromise = channel.delete("Deleted via slash command")
-  const deleteRolePromise = role.delete("Deleted via slash command")
-
-  const otherProjectRoles = channel.guild.roles.cache
-    .filter(({ name }) => projectRolePrefix.test(name) && name !== role.name)
-    .sort((a, b) => a.name.localeCompare(b.name))
-
-  /**
-   * This is required because apparently the second argument in `Collection.map`
-   * is not a number but a string
-   */
-  let index = 1
-  const renameRolesPromise = otherProjectRoles.map((role) => {
-    const name = role.name.replace(projectRolePrefix, `P${index++} - `)
-    return role.setName(name)
-  })
-
-  return Promise.all([
-    deleteChannelPromise,
-    deleteRolePromise,
-    renameRolesPromise,
-  ])
-}
 
 export async function remove(
   interaction: CommandInteraction | AutocompleteInteraction

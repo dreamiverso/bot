@@ -1,3 +1,5 @@
 export * from "./choices"
 export * from "./formatChannelName"
 export * from "./mapChoicesToArray"
+export * from "./removeProject"
+export * from "./removeProjectRolePrefix"

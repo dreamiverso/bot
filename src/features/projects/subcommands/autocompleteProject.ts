@@ -1,9 +1,6 @@
 import { AutocompleteInteraction, GuildMemberRoleManager } from "discord.js"
 
-import {
-  projectRolePrefix,
-  removeProjectRolePrefix,
-} from "./removeProjectRolePrefix"
+import { projectRolePrefix, removeProjectRolePrefix } from "../utils"
 
 export async function autocompleteProject(
   interaction: AutocompleteInteraction
