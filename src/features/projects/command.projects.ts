@@ -8,6 +8,7 @@ import { autocompleteProject } from "./subcommands/autocompleteProject"
 import { create } from "./subcommands/create"
 import { edit } from "./subcommands/edit"
 import { remove } from "./subcommands/remove"
+import { editVisibility } from "./subcommands/editVisibility"
 
 const builder = new SlashCommandBuilder()
   .setName("proyecto")
@@ -136,7 +137,7 @@ export default createCommand(builder, async (interaction) => {
       return interaction.reply("editar tema")
     case "visibilidad":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      return interaction.reply("editar visibilidad")
+      return editVisibility(interaction)
     case "listar":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
       return interaction.reply("miembros listar")

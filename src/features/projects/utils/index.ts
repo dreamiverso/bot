@@ -1,5 +1,6 @@
 export * from "./choices"
 export * from "./formatChannelName"
+export * from "./getProjectInfoFromAutocompleteOption"
 export * from "./mapChoicesToArray"
 export * from "./removeProject"
 export * from "./removeProjectRolePrefix"

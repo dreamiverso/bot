@@ -4,19 +4,14 @@ import {
   AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
-  ChannelType,
   CommandInteraction,
   ComponentType,
   EmbedBuilder,
 } from "discord.js"
 
-import { collectComponentInteraction, constants, wait } from "~/utils"
+import { collectComponentInteraction, wait } from "~/utils"
 
-import {
-  formatChannelName,
-  removeProject,
-  removeProjectRolePrefix,
-} from "../utils"
+import { getProjectInfoFromAutocompleteOption, removeProject } from "../utils"
 
 enum ID {
   VOTE_CONFIRM = "confirmVoteProjectDelete",
@@ -55,44 +50,15 @@ export async function remove(
   if (!interaction.isChatInputCommand()) return
   if (!interaction.guild) return
 
-  const roleName = interaction.options.getString("proyecto")
+  const info = await getProjectInfoFromAutocompleteOption(interaction, {
+    force: true,
+  })
 
-  if (!roleName) {
-    return interaction.reply({
-      ephemeral: true,
-      content: "¡Debes elegir un proyecto!",
-    })
+  if (!info) {
+    throw Error("Could not find info for this project")
   }
 
-  const projectName = removeProjectRolePrefix(roleName)
-  const channelName = formatChannelName(projectName)
-
-  const channel = interaction.guild.channels.cache.find(
-    (channel) =>
-      channel.name === channelName &&
-      channel.parentId === constants.CATEGORY_ID.PROJECTS
-  )
-
-  if (!channel) {
-    return interaction.reply({
-      ephemeral: true,
-      content: oneLine`
-        ¡Ups! Ese proyecto no existe.
-        Quizás alguien acaba de eliminarlo 🤔
-      `,
-    })
-  }
-
-  if (channel.type !== ChannelType.GuildText) {
-    throw Error("Unexpected channel type")
-  }
-
-  /**
-   * This is required to force a cache update from Discord APIs
-   */
-  await channel.guild.members.fetch({ force: true })
-
-  const role = channel.guild.roles.cache.find((role) => role.name === roleName)
+  const { channel, projectName, role } = info
 
   if (!role) {
     throw Error("Role from autocomplete does not exist")
@@ -131,7 +97,7 @@ export async function remove(
       interaction.editReply({
         components: [],
         embeds: [],
-        content: "Abriendo votación…",
+        content: "⏳ Abriendo votación…",
       })
 
       const embed = new EmbedBuilder().setColor(0x8000ff).addFields(
@@ -190,7 +156,7 @@ export async function remove(
           message.edit({
             embeds: [embed],
             components: [],
-            content: "Eliminando proyecto…",
+            content: "⏳ Eliminando proyecto…",
           })
 
           await wait(3000)
