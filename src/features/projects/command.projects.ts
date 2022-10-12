@@ -9,6 +9,7 @@ import { create } from "./subcommands/create"
 import { edit } from "./subcommands/edit"
 import { remove } from "./subcommands/remove"
 import { editVisibility } from "./subcommands/editVisibility"
+import { membersList } from "./subcommands/membersList"
 
 const builder = new SlashCommandBuilder()
   .setName("proyecto")
@@ -42,7 +43,7 @@ const builder = new SlashCommandBuilder()
       .addStringOption((option) =>
         option
           .setName("proyecto")
-          .setDescription("El proyecto a modificar")
+          .setDescription("El proyecto a eliminar")
           .setRequired(true)
           .setAutocomplete(true)
       )
@@ -109,6 +110,13 @@ const builder = new SlashCommandBuilder()
           .setDescription(
             "Lista todos los miembros de un proyecto al que pertenezcas"
           )
+          .addStringOption((option) =>
+            option
+              .setName("proyecto")
+              .setDescription("El proyecto a consultar")
+              .setRequired(true)
+              .setAutocomplete(true)
+          )
       )
       .addSubcommand((subcommand) =>
         subcommand
@@ -140,7 +148,7 @@ export default createCommand(builder, async (interaction) => {
       return editVisibility(interaction)
     case "listar":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      return interaction.reply("miembros listar")
+      return membersList(interaction)
     case "añadir":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
       return interaction.reply("miembros añadir")
