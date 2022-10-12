@@ -34,7 +34,7 @@ export async function editVisibility(
       if (channel.permissionOverwrites.cache.size) {
         return interaction.reply({
           ephemeral: true,
-          content: `Amigo esto ya es privado`,
+          content: "¡Ups! Este canal ya es visible solo para miembros 🤔",
         })
       }
 
@@ -54,7 +54,7 @@ export async function editVisibility(
       if (!channel.permissionOverwrites.cache.size) {
         return interaction.reply({
           ephemeral: true,
-          content: `Amigo esto ya es público`,
+          content: "¡Ups! Este canal ya es visible para todo el mundo 🤔",
         })
       }
 
