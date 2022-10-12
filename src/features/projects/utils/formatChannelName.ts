@@ -12,6 +12,7 @@ const whitespaces = new RegExp(/[\p{Z}\s]+/giu)
 export function formatChannelName(name: string) {
   return name
     .replace(invalidChannelNameCharacters, "")
+    .trim()
     .replace(whitespaces, "-")
     .toLocaleLowerCase()
 }

@@ -1,9 +1,11 @@
 import {
+  AwaitModalSubmitOptions,
   ButtonInteraction,
   ChatInputCommandInteraction,
   ComponentType,
   MessageChannelCollectorOptionsParams,
   MessageComponentType,
+  ModalSubmitInteraction,
   SelectMenuInteraction,
 } from "discord.js"
 
@@ -45,5 +47,25 @@ export async function collectComponentInteraction<
 
       if (!collected) reject("No interaction found")
     })
+  })
+}
+
+export async function collectModalInteraction(
+  interaction: ChatInputCommandInteraction,
+  options: AwaitModalSubmitOptions<ModalSubmitInteraction> & {
+    ids: string[]
+  }
+) {
+  return new Promise<ModalSubmitInteraction>((resolve, reject) => {
+    interaction
+      .awaitModalSubmit(options)
+      .then((i) => {
+        if (i.user.id !== interaction.user.id) return
+        if (!options.ids.includes(i.customId)) return
+        return resolve(i)
+      })
+      .catch(() => {
+        reject("No interaction found")
+      })
   })
 }

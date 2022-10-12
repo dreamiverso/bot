@@ -6,10 +6,11 @@ import { visibilityChoices, mapChoicesToArray } from "./utils"
 
 import { autocompleteProject } from "./subcommands/autocompleteProject"
 import { create } from "./subcommands/create"
-import { edit } from "./subcommands/edit"
-import { remove } from "./subcommands/remove"
+import { editName } from "./subcommands/editName"
+import { editTheme } from "./subcommands/editTheme"
 import { editVisibility } from "./subcommands/editVisibility"
 import { membersList } from "./subcommands/membersList"
+import { remove } from "./subcommands/remove"
 
 const builder = new SlashCommandBuilder()
   .setName("proyecto")
@@ -139,10 +140,10 @@ export default createCommand(builder, async (interaction) => {
       return create(interaction)
     case "nombre":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      return interaction.reply("editar nombre")
+      return editName(interaction)
     case "tema":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      return interaction.reply("editar tema")
+      return editTheme(interaction)
     case "visibilidad":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
       return editVisibility(interaction)

@@ -34,7 +34,7 @@ export async function create(
     })
   }
 
-  const channelName = formatChannelName(name.trim())
+  const channelName = formatChannelName(name)
 
   if (!channelName) {
     return interaction.reply({
