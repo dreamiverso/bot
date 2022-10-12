@@ -9,18 +9,6 @@ import { create } from "./subcommands/create"
 import { edit } from "./subcommands/edit"
 import { remove } from "./subcommands/remove"
 
-/**
- * /proyecto crear {nombre} {visibilidad}
- * /proyecto eliminar {proyecto}
- *
- * /proyecto editar nombre {proyecto} {nombre}
- * /proyecto editar tema {proyecto} {tema}
- * /proyecto editar visibilidad {proyecto} {visibilidad}
- *
- * /proyecto miembros listar {proyecto}
- * /proyecto miembros añadir {proyecto} {@usuario}
- * /proyecto miembros eliminar {proyecto} {@usuario}
- */
 const builder = new SlashCommandBuilder()
   .setName("proyecto")
   .setDescription("Comandos relacionados con los canales de proyecto")
@@ -40,7 +28,7 @@ const builder = new SlashCommandBuilder()
         option
           .setName("visibilidad")
           .setDescription(
-            "Escoge si tu canal de proyecto empezará siendo visible para todo el mundo o solo para sus miembros"
+            "Quiénes podrán ver inicialmente tu canal de proyecto"
           )
           .setRequired(true)
           .addChoices(...mapChoicesToArray(visibilityChoices))
@@ -65,7 +53,9 @@ const builder = new SlashCommandBuilder()
       .addSubcommand((subcommand) =>
         subcommand
           .setName("nombre")
-          .setDescription("Modifica el nombre de proyecto al que pertenezcas")
+          .setDescription(
+            "Modifica el nombre de un proyecto al que pertenezcas"
+          )
           .addStringOption((option) =>
             option
               .setName("proyecto")
@@ -77,7 +67,7 @@ const builder = new SlashCommandBuilder()
       .addSubcommand((subcommand) =>
         subcommand
           .setName("tema")
-          .setDescription("Modifica el tema de proyecto al que pertenezcas")
+          .setDescription("Modifica el tema de un proyecto al que pertenezcas")
           .addStringOption((option) =>
             option
               .setName("proyecto")
@@ -89,7 +79,9 @@ const builder = new SlashCommandBuilder()
       .addSubcommand((subcommand) =>
         subcommand
           .setName("visibilidad")
-          .setDescription("Modifica la visibilidad al que pertenezcas")
+          .setDescription(
+            "Modifica la visibilidad de un proyecto al que pertenezcas"
+          )
           .addStringOption((option) =>
             option
               .setName("proyecto")
@@ -100,7 +92,7 @@ const builder = new SlashCommandBuilder()
           .addStringOption((option) =>
             option
               .setName("visibilidad")
-              .setDescription("La visibilidad etc")
+              .setDescription("Quiénes podrán ver tu canal de proyecto")
               .setRequired(true)
               .addChoices(...mapChoicesToArray(visibilityChoices))
           )
@@ -109,15 +101,23 @@ const builder = new SlashCommandBuilder()
   .addSubcommandGroup((group) =>
     group
       .setName("miembros")
-      .setDescription("Maneja los miembros del proyecto seleccionado")
+      .setDescription("Maneja los miembros de un proyecto al que pertenezcas")
       .addSubcommand((subcommand) =>
-        subcommand.setName("listar").setDescription("Lista miembros")
+        subcommand
+          .setName("listar")
+          .setDescription(
+            "Lista todos los miembros de un proyecto al que pertenezcas"
+          )
       )
       .addSubcommand((subcommand) =>
-        subcommand.setName("añadir").setDescription("Añadir miembros")
+        subcommand
+          .setName("añadir")
+          .setDescription("Añade miembros a un proyecto al que pertenezcas")
       )
       .addSubcommand((subcommand) =>
-        subcommand.setName("eliminar").setDescription("Eliminar miembros")
+        subcommand
+          .setName("eliminar")
+          .setDescription("Elimina miembros de un proyecto al que pertenezcas")
       )
   )
 
