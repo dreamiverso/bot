@@ -122,15 +122,30 @@ const builder = new SlashCommandBuilder()
   )
 
 export default createCommand(builder, async (interaction) => {
+  const group = interaction.options.data[0].name
+
   // @ts-expect-error getSubcommand also works with autocomplete wth is this error
   switch (interaction.options.getSubcommand()) {
     case "crear":
       return create(interaction)
-    case "editar":
+    case "nombre":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      return edit(interaction)
+      return interaction.reply("editar nombre")
+    case "tema":
+      if (interaction.isAutocomplete()) return autocompleteProject(interaction)
+      return interaction.reply("editar tema")
+    case "visibilidad":
+      if (interaction.isAutocomplete()) return autocompleteProject(interaction)
+      return interaction.reply("editar visibilidad")
+    case "listar":
+      if (interaction.isAutocomplete()) return autocompleteProject(interaction)
+      return interaction.reply("miembros listar")
+    case "añadir":
+      if (interaction.isAutocomplete()) return autocompleteProject(interaction)
+      return interaction.reply("miembros añadir")
     case "eliminar":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
+      if (group === "miembros") return interaction.reply("miembros eliminar")
       return remove(interaction)
     default:
       throw Error("unhandled subcommand")
