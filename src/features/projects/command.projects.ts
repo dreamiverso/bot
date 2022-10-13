@@ -9,7 +9,9 @@ import { create } from "./subcommands/create"
 import { editName } from "./subcommands/editName"
 import { editTheme } from "./subcommands/editTheme"
 import { editVisibility } from "./subcommands/editVisibility"
+import { membersAdd } from "./subcommands/membersAdd"
 import { membersList } from "./subcommands/membersList"
+import { membersRemove } from "./subcommands/membersRemove"
 import { remove } from "./subcommands/remove"
 
 const builder = new SlashCommandBuilder()
@@ -123,11 +125,37 @@ const builder = new SlashCommandBuilder()
         subcommand
           .setName("añadir")
           .setDescription("Añade miembros a un proyecto al que pertenezcas")
+          .addStringOption((option) =>
+            option
+              .setName("proyecto")
+              .setDescription("El proyecto a consultar")
+              .setRequired(true)
+              .setAutocomplete(true)
+          )
+          .addUserOption((option) =>
+            option
+              .setName("usuario")
+              .setDescription("El usuario a añadir")
+              .setRequired(true)
+          )
       )
       .addSubcommand((subcommand) =>
         subcommand
           .setName("eliminar")
           .setDescription("Elimina miembros de un proyecto al que pertenezcas")
+          .addStringOption((option) =>
+            option
+              .setName("proyecto")
+              .setDescription("El proyecto a consultar")
+              .setRequired(true)
+              .setAutocomplete(true)
+          )
+          .addUserOption((option) =>
+            option
+              .setName("usuario")
+              .setDescription("El usuario a eliminar")
+              .setRequired(true)
+          )
       )
   )
 
@@ -152,10 +180,10 @@ export default createCommand(builder, async (interaction) => {
       return membersList(interaction)
     case "añadir":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      return interaction.reply("miembros añadir")
+      return membersAdd(interaction)
     case "eliminar":
       if (interaction.isAutocomplete()) return autocompleteProject(interaction)
-      if (group === "miembros") return interaction.reply("miembros eliminar")
+      if (group === "miembros") return membersRemove(interaction)
       return remove(interaction)
     default:
       throw Error("unhandled subcommand")
