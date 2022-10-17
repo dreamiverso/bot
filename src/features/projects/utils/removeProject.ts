@@ -6,6 +6,8 @@ export async function removeProject(channel: TextChannel, role: Role) {
   const deleteChannelPromise = channel.delete("Deleted via slash command")
   const deleteRolePromise = role.delete("Deleted via slash command")
 
+  await Promise.all([deleteChannelPromise, deleteRolePromise])
+
   const otherProjectRoles = channel.guild.roles.cache
     .filter(({ name }) => projectRolePrefix.test(name) && name !== role.name)
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -20,9 +22,5 @@ export async function removeProject(channel: TextChannel, role: Role) {
     return role.setName(name)
   })
 
-  return Promise.all([
-    deleteChannelPromise,
-    deleteRolePromise,
-    renameRolesPromise,
-  ])
+  return Promise.all(renameRolesPromise)
 }

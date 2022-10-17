@@ -2,7 +2,7 @@ import { ChannelType, Client, Message } from "discord.js"
 import { stripIndent } from "common-tags"
 import dayjs from "dayjs"
 
-import { createHandler, cron, env, constants } from "~/utils"
+import { createHandler, cron, env, constants, wait } from "~/utils"
 
 import {
   formatChannelName,
@@ -14,7 +14,7 @@ import {
 
 const WARN_ARCHIVED = "```md\n<PROYECTO ARCHIVADO>\n```"
 const WARN_INACTIVE = "```md\n<PROYECTO INACTIVO>\n```"
-const WARN_DELETE = "```md\n<PROYECTO MARCADO PARA ELIMINACIÓN>\n```"
+const WARN_DELETE = "```md\n<PROYECTO MARCADO PARA SER ELIMINADO>\n```"
 
 function getLastMessageType(
   client: Client<true>,
@@ -25,6 +25,7 @@ function getLastMessageType(
   if (message.content === WARN_INACTIVE) return "WARN_INACTIVE"
   if (message.content === WARN_ARCHIVED) return "WARN_ARCHIVED"
   if (message.content === WARN_DELETE) return "WARN_DELETE"
+  return "OTHER"
 }
 
 export default createHandler("ready", async (client) => {
@@ -37,6 +38,9 @@ export default createHandler("ready", async (client) => {
       throw Error("Could not find guild")
     }
 
+    // Revalidate cache
+    await guild.members.fetch({ force: true })
+
     const projects = guild.channels.cache.filter(
       (channel) =>
         channel.parentId === constants.CATEGORY_ID.PROJECTS &&
@@ -48,6 +52,8 @@ export default createHandler("ready", async (client) => {
     )
 
     projects.forEach(async (project) => {
+      await wait(3000)
+
       if (project.type !== ChannelType.GuildText) return
 
       const projectRole = projectRoles.find((role) => {
