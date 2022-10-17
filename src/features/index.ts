@@ -94,7 +94,7 @@ function initInteractions(client: Client<true>) {
       }
     } else if ("customId" in interaction) {
       const handler = componentsMap.get(interaction.customId)
-      if (!handler) throw Error(`Missing handler ${interaction.customId}`)
+      if (!handler) return
 
       try {
         handler(interaction)
@@ -106,11 +106,6 @@ function initInteractions(client: Client<true>) {
           error: error instanceof Error ? error.message : String(error),
         })
       }
-    } else {
-      notifyError(client, {
-        name: "Unhandled interaction type",
-        value: JSON.stringify(interaction),
-      })
     }
   })
 }
