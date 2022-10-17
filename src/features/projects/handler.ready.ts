@@ -12,8 +12,9 @@ import {
   removeProjectRolePrefix,
 } from "./utils"
 
-const WARN_INACTIVE = "```md\n<PROYECTO INACTIVO>\n```"
 const WARN_ARCHIVED = "```md\n<PROYECTO ARCHIVADO>\n```"
+const WARN_INACTIVE = "```md\n<PROYECTO INACTIVO>\n```"
+const WARN_DELETE = "```md\n<PROYECTO MARCADO PARA ELIMINACIÓN>\n```"
 
 function getLastMessageType(
   client: Client<true>,
@@ -23,6 +24,7 @@ function getLastMessageType(
   if (message.author.id !== client.application.id) return "OTHER"
   if (message.content === WARN_INACTIVE) return "WARN_INACTIVE"
   if (message.content === WARN_ARCHIVED) return "WARN_ARCHIVED"
+  if (message.content === WARN_DELETE) return "WARN_DELETE"
 }
 
 export default createHandler("ready", async (client) => {
@@ -36,7 +38,9 @@ export default createHandler("ready", async (client) => {
     }
 
     const projects = guild.channels.cache.filter(
-      (channel) => channel.parentId === constants.CATEGORY_ID.PROJECTS
+      (channel) =>
+        channel.parentId === constants.CATEGORY_ID.PROJECTS &&
+        channel.id !== constants.CHANNEL_ID.PROJECTS_GUIDE
     )
 
     const projectRoles = guild.roles.cache.filter((role) =>
@@ -66,9 +70,28 @@ export default createHandler("ready", async (client) => {
       )(projectRole.name)
 
       switch (messageType) {
-        case "WARN_ARCHIVED":
-          if (!dayjs().subtract(1, "month").isAfter(lastDate)) return
+        case "WARN_DELETE":
+          if (!dayjs().subtract(1, "week").isAfter(lastDate)) return
           return removeProject(project, projectRole)
+        case "WARN_ARCHIVED":
+          // prettier-ignore
+          if (!dayjs().subtract(1, "month").subtract(1, "day").isAfter(lastDate)) return
+
+          await project.send({
+            content: stripIndent`
+              ¡Alerta, ${projectRole}!
+              No se ha respondido al aviso de inactividad.
+
+              Esta es la última fase del proceso de purga de proyectos inactivos.
+              Para detenerlo, cualquier mensaje por este canal bastará.
+              Si no se dice nada por este canal en menos de **24 HORAS**, ESTE PROYECTO VA A SER ELIMINADO.
+              Este es el último aviso, **¡si no hay actividad durante 24 horas no habrá vuelta atrás!**
+
+              ¿Está abandonado este proyecto? También se puede eliminar inmediatamente con el comando \`/proyecto eliminar ${channelName}\`.
+            `,
+          })
+
+          return project.send(WARN_DELETE)
         case "WARN_INACTIVE":
           if (!dayjs().subtract(1, "week").isAfter(lastDate)) return
 
