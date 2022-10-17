@@ -33,6 +33,7 @@ export async function getProjectInfoFromAutocompleteOption(
   const channel = interaction.guild.channels.cache.find(
     (channel) =>
       channel.name === channelName &&
+      channel.id !== constants.CHANNEL_ID.PROJECTS_GUIDE &&
       channel.parentId === constants.CATEGORY_ID.PROJECTS
   )
 

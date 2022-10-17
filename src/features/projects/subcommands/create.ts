@@ -55,7 +55,9 @@ export async function create(
   }
 
   const projects = interaction.guild.channels.cache.filter(
-    (channel) => channel.parentId === constants.CATEGORY_ID.PROJECTS
+    (channel) =>
+      channel.parentId === constants.CATEGORY_ID.PROJECTS &&
+      channel.id !== constants.CHANNEL_ID.PROJECTS_GUIDE
   )
 
   const roleName = `P${projects.size + 1} - ${name.trim()}`
