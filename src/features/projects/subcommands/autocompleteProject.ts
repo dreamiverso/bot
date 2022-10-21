@@ -1,4 +1,8 @@
-import { AutocompleteInteraction, GuildMemberRoleManager } from "discord.js"
+import {
+  ApplicationCommandOptionChoiceData,
+  AutocompleteInteraction,
+  GuildMemberRoleManager,
+} from "discord.js"
 
 import { projectRolePrefix, removeProjectRolePrefix } from "../utils"
 
@@ -15,8 +19,7 @@ export async function autocompleteProject(
   const value = interaction.options.getFocused()
 
   const validProjects = interaction.member.roles.cache.reduce<
-    // TODO: hay un tipo de esto fijísimo
-    { name: string; value: string }[]
+    ApplicationCommandOptionChoiceData<string | number>[]
   >((accumulator, role) => {
     if (projectRolePrefix.test(role.name)) {
       const projectName = removeProjectRolePrefix(role.name)
