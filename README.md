@@ -8,50 +8,53 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 - `typescript`
 - `postgresql`
 - `prisma`
-- `heroku`
+- `fly.io`
 
 ## Comandos
 
-| Comando         | Desscripción                                                    |
-| --------------- | --------------------------------------------------------------- |
-| `prepare`       | Se ejecuta automáticamente. Configura `husky`.                  |
-| `dev`           | Inicia el proyecto en modo desarrollo.                          |
-| `lint`          | Ejecuta ESLint para formatear y solventar errores en el código. |
-| `build`         | Crea una versión de producción para ejecutar en local.          |
-| `start`         | Inicia una versión de producción generada previamente.          |
-| `check`         | Comprueba la validez de los tipos de TypeScript.                |
-| `commands:nuke` | Elimina los comandos del bot de la API de Discord.              |
-| `commands:sync` | Sincroniza los comandos del bot con la API de Discord.          |
+| Comando   | Desscripción                                                    |
+| --------- | --------------------------------------------------------------- |
+| `prepare` | Se ejecuta automáticamente. Configura `husky`.                  |
+| `dev`     | Inicia el proyecto en modo desarrollo.                          |
+| `lint`    | Ejecuta ESLint para formatear y solventar errores en el código. |
+| `build`   | Crea una versión de producción para ejecutar en local.          |
+| `start`   | Inicia una versión de producción generada previamente.          |
+| `check`   | Comprueba la validez de los tipos de TypeScript.                |
+| `sync`    | Sincroniza los comandos del bot con la API de Discord.          |
 
 ## Workflows
 
 ### Iniciar el proyecto en tu máquina
 
-1. Instala `node` desde la [web oficial](https://nodejs.org/). Este proyecto require la versión `18` o mayor.
+1. Instala `node` desde la [web oficial](https://nodejs.org/). Este proyecto require la versión `16` o mayor.
 
 ```zsh
   node -v
 ```
 
-2. Instala `postgres` y crea un servidor local con una base de datos vacía. Puedes seguir [esta guía](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup). Cada vez que hagas cambios en el `schema`, tendrás que ejecutar el siguiente comando:
+2. Instala `postgresql` y crea un servidor local con una base de datos vacía. Puedes seguir [esta guía](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup). Cada vez que hagas cambios en el `schema`, tendrás que ejecutar el siguiente comando:
 
 ```zsh
   npm run prisma generate
 ```
 
-3. Crea un archivo `.env` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
+3. Solicita una invitación al servidor de sandbox del Dreamiverso a [soporte@dreamiverso.me](mailto:soporte@dreamiverso.me) o al equipo de moderación en el [servidor de Discord](https://discord.dreamiverso.me).
+
+4. Crea una aplicación de bot desde el [portal de desarrolladores de Discord](https://discord.com/developers/applications).
+
+5. Clona el respositorio y crea un archivo `.env` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
 
 ```zsh
   touch .env
 ```
 
-4. Instala las dependencias.
+6. Instala las dependencias.
 
 ```zsh
   npm install
 ```
 
-5. Inicia el proyecto en el entorno de desarrollo.
+7. Inicia el proyecto en el entorno de desarrollo.
 
 ```zsh
   npm run dev
@@ -253,10 +256,10 @@ El proyecto requiere un archivo `.env` para funcionar correctamente. Puedes clon
 
 | Variable                 |  Valor   | Descripción                                                                                                                                                                                                                |
 | ------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`           | `string` | La connection string de tu base de datos.                                                                                                                                                                                  |
+| `DATABASE_URL`           | `string` | La connection string de tu base de datos local.                                                                                                                                                                                  |
 | `DISCORD_BOT_TOKEN`      | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `Bot > Token`.                                                    |
 | `DISCORD_APPLICATION_ID` | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `General Information > Application ID`                            |
-| `DISCORD_SERVER_ID`      | `string` | Se obtiene desde la aplicación de Discord. Necesitarás activar el modo desarrollador en `Ajustes de usuario > Avanzado > Modo desarrollador`. Luego, haz click derecho en el nombre del servidor y selecciona `Copiar ID`. |
+| `DISCORD_SERVER_ID`      | `string` | El ID del servidor de sandbox del Dreamiverso. Si lo necesitas, ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me) |
 
 ### Acceder a las variables de entorno
 
