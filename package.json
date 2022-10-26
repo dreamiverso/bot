@@ -27,6 +27,7 @@
     "happy-dom": "^6.0.4",
     "node-cron": "^3.0.2",
     "prisma": "^4.3.1",
+    "srcset": "^5.0.0",
     "zod": "^3.19.1"
   },
   "devDependencies": {

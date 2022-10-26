@@ -1,5 +1,6 @@
 import got from "got"
 import { Window } from "happy-dom"
+import { parseSrcset } from "srcset"
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -12,7 +13,7 @@ import { shareButton } from "../component.shareToChannelButton"
 
 const window = new Window()
 
-export async function searchUser(interaction: CommandInteraction) {
+export async function searchDream(interaction: CommandInteraction) {
   if (!interaction.isChatInputCommand()) return
   if (!interaction.guild) return
 
@@ -30,36 +31,31 @@ export async function searchUser(interaction: CommandInteraction) {
     const data = await got(url).text()
     window.document.body.innerHTML = data
 
-    const avatar = window.document
-      .querySelector(".profile__thumbnail img")
-      .getAttribute("src")
+    const srcset = window.document
+      .querySelector(".gallery img")
+      .getAttribute("srcset")
 
-    const personas = window.document.querySelectorAll(".persona")
+    const [banner] = parseSrcset(srcset)
 
-    const [level, primaryAura, secondaryAura] = Array.from(personas).map(
-      (element) => element.textContent
-    )
+    const title = window.document.querySelector("h1").textContent
 
-    const levelField = level && {
-      name: "Nivel",
-      value: level,
-    }
-
-    const auraField = primaryAura && {
-      name: secondaryAura ? "Auras" : "Aura",
-      value: secondaryAura ? `${primaryAura} + ${secondaryAura}` : primaryAura,
-    }
+    const descr = window.document.querySelector(
+      ".profile__block.profile__block--intro"
+    ).textContent
 
     const embed = new EmbedBuilder()
       .setColor(0x8000ff)
-      .setImage(avatar)
-      .addFields({
-        name: "Nombre de usuario",
-        value: term,
-      })
-
-    if (levelField) embed.addFields(levelField)
-    if (auraField) embed.addFields(auraField)
+      .setImage(banner.url)
+      .addFields(
+        {
+          name: "Nombre",
+          value: title,
+        },
+        {
+          name: "Descripción",
+          value: descr,
+        }
+      )
 
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
       shareButton,
@@ -71,14 +67,14 @@ export async function searchUser(interaction: CommandInteraction) {
 
     return interaction.reply({
       ephemeral: true,
-      content: `¡Échale un vistazo al perfil de ${term}!`,
+      content: `¡Échale un vistazo a este sueño!`,
       embeds: [embed],
       components: [buttons],
     })
   } catch (error) {
     return interaction.reply({
       ephemeral: true,
-      content: `¡Ups! No hemos podido encontrar el usuario ${term} 🤔`,
+      content: `¡Ups! No hemos podido encontrar el sueño ${term} 🤔`,
     })
   }
 }

@@ -4,6 +4,7 @@ import { createCommand } from "~/utils"
 
 import { autocomplete } from "./subcommands/autocomplete"
 import { searchUser } from "./subcommands/searchUser"
+import { searchDream } from "./subcommands/searchDream"
 
 export const choices = [
   { name: "Usuario", value: "users" },
@@ -50,10 +51,14 @@ export default createCommand(builder, (interaction) => {
     case "users":
       return searchUser(interaction)
     case "dreams":
+      return searchDream(interaction)
     case "scenes":
     case "elements":
     case "collections":
-      return interaction.reply("WIP")
+      return interaction.reply({
+        ephemeral: true,
+        content: interaction.options.getString("término") || "wip",
+      })
     default:
       throw Error(`Unhandled search type: ${type}`)
   }
