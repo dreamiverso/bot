@@ -28,7 +28,7 @@ export async function searchDream(interaction: CommandInteraction) {
 
   try {
     const url = `https://indreams.me/${term}`
-    const data = await got(url).text()
+    const data = await got(url, { headers: { cookie: "Locale=es_ES" } }).text()
     window.document.body.innerHTML = data
 
     const srcset = window.document

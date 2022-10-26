@@ -18,7 +18,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
   const value = interaction.options.getFocused()
   const url = getUrl(value, type)
-  const data = await got(url).text()
+  const data = await got(url, { headers: { cookie: "Locale=es_ES" } }).text()
 
   window.document.body.innerHTML = data
 
