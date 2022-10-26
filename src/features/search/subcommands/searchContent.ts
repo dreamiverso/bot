@@ -13,7 +13,7 @@ import { shareButton } from "../component.shareToChannelButton"
 
 const window = new Window()
 
-export async function searchDream(interaction: CommandInteraction) {
+export async function searchContent(interaction: CommandInteraction) {
   if (!interaction.isChatInputCommand()) return
   if (!interaction.guild) return
 
@@ -26,8 +26,9 @@ export async function searchDream(interaction: CommandInteraction) {
     })
   }
 
+  const url = `https://indreams.me/${term}`
+
   try {
-    const url = `https://indreams.me/${term}`
     const data = await got(url, { headers: { cookie: "Locale=es_ES" } }).text()
     window.document.body.innerHTML = data
 
@@ -74,7 +75,7 @@ export async function searchDream(interaction: CommandInteraction) {
   } catch (error) {
     return interaction.reply({
       ephemeral: true,
-      content: `¡Ups! No hemos podido encontrar el sueño ${term} 🤔`,
+      content: `¡Ups! No he podido encontrar eso… 🤔 Prueba visitando la url: ${url}`,
     })
   }
 }
