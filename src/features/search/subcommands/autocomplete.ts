@@ -1,6 +1,7 @@
 import got from "got"
 import { Window } from "happy-dom"
 import { AutocompleteInteraction } from "discord.js"
+
 import { Choice } from "../command.search"
 
 function getUrl(query: string, type: Choice) {

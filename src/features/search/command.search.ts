@@ -2,10 +2,12 @@ import { SlashCommandBuilder } from "discord.js"
 
 import { createCommand } from "~/utils"
 
-import { autocomplete } from "./subcommands/autocomplete"
-import { searchUser } from "./subcommands/searchUser"
-import { searchContent } from "./subcommands/searchContent"
-import { searchCollection } from "./subcommands/searchCollection"
+import {
+  autocomplete,
+  searchUser,
+  searchContent,
+  searchCollection,
+} from "./subcommands"
 
 export const choices = [
   { name: "Usuario", value: "users" },
