@@ -68,7 +68,7 @@ export async function searchCollection(interaction: CommandInteraction) {
 
     return interaction.reply({
       ephemeral: true,
-      content: `¡Échale un vistazo a este sueño!`,
+      content: `¡Échale un vistazo a esto!`,
       embeds: [embed],
       components: [buttons],
     })
