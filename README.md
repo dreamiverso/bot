@@ -12,15 +12,14 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 
 ## Comandos
 
-| Comando   | Desscripción                                                    |
-| --------- | --------------------------------------------------------------- |
-| `prepare` | Se ejecuta automáticamente. Configura `husky`.                  |
-| `dev`     | Inicia el proyecto en modo desarrollo.                          |
-| `lint`    | Ejecuta ESLint para formatear y solventar errores en el código. |
-| `build`   | Crea una versión de producción para ejecutar en local.          |
-| `start`   | Inicia una versión de producción generada previamente.          |
-| `check`   | Comprueba la validez de los tipos de TypeScript.                |
-| `sync`    | Sincroniza los comandos del bot con la API de Discord.          |
+| Comando | Desscripción                                                    |
+| ------- | --------------------------------------------------------------- |
+| `dev`   | Inicia el proyecto en modo desarrollo.                          |
+| `lint`  | Ejecuta ESLint para formatear y solventar errores en el código. |
+| `build` | Crea una versión de producción para ejecutar en local.          |
+| `start` | Inicia una versión de producción generada previamente.          |
+| `check` | Comprueba la validez de los tipos de TypeScript.                |
+| `sync`  | Sincroniza los comandos del bot con la API de Discord.          |
 
 ## Workflows
 
@@ -254,12 +253,12 @@ import { env, constants } from "~/utils"
 
 El proyecto requiere un archivo `.env` para funcionar correctamente. Puedes clonar el archivo `.env.template` y rellenarlo con las variables necesarias.
 
-| Variable                 |  Valor   | Descripción                                                                                                                                                                                                                |
-| ------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`           | `string` | La connection string de tu base de datos local.                                                                                                                                                                                  |
-| `DISCORD_BOT_TOKEN`      | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `Bot > Token`.                                                    |
-| `DISCORD_APPLICATION_ID` | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `General Information > Application ID`                            |
-| `DISCORD_SERVER_ID`      | `string` | El ID del servidor de sandbox del Dreamiverso. Si lo necesitas, ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me) |
+| Variable                 |  Valor   | Descripción                                                                                                                                                                                     |
+| ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`           | `string` | La connection string de tu base de datos local.                                                                                                                                                 |
+| `DISCORD_BOT_TOKEN`      | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `Bot > Token`.                         |
+| `DISCORD_APPLICATION_ID` | `string` | Se obtiene desde [el portal de desarrolladores de Discord](https://discord.com/developers/applications/), dentro de la aplicación del bot, en la sección `General Information > Application ID` |
+| `DISCORD_SERVER_ID`      | `string` | El ID del servidor de sandbox del Dreamiverso. Si lo necesitas, ponte en contacto con el [equipo de moderación del Dreamiverso](mailto:soporte@dreamiverso.me)                                  |
 
 ### Acceder a las variables de entorno
 
@@ -275,25 +274,3 @@ import { env } from "~/utils"
 env.DISCORD_BOT_TOKEN // string
 env.THIS_DOESNT_EXIST // Property 'THIS_DOESNT_EXIST' does not exist [...]
 ```
-
-## Estilo del código
-
-### Path aliases
-
-Este proyecto implementa un path alias de `typescript` para importar módulos desde el directorio `src`.
-
-```ts
-// ⛔ Evita imports relativos de archivos padres
-import type { Handler } from "../../types
-
-// ✅ Mejor usa el alias `~/*` para importar desde `src/*`
-import type { Handler } from "~/types
-```
-
-### Linting y formato
-
-Este proyecto implementa `eslint` como linter, e integra `prettier` para mostrar errores en el formato. Recomendamos instalar los plugins de `eslint` y `prettier` en tu IDE para una mejor experiencia. Un git hook de `husky` se ejecuta antes de cada push para resolver automáticamente todos los problemas de `eslint`.
-
-### Conventional Commits
-
-Este proyecto sigue la especificación de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). Un git hook de `husky` se ejecuta antes de cada push para asegurar que los mensajes de tus commits siguen la especificación.
