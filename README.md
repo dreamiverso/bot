@@ -8,7 +8,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 - `typescript`
 - `postgresql`
 - `prisma`
-- `fly.io`
+- `railway`
 
 ## Comandos
 
@@ -16,7 +16,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 | ------- | --------------------------------------------------------------- |
 | `dev`   | Inicia el proyecto en el entorno de desarrollo.                 |
 | `sync`  | Sincroniza los comandos del bot con la API de Discord.          |
-| `lint`  | Ejecuta ESLint para formatear y solventar errores en el código. |
+| `lint`  | Ejecuta ESLint para mostrar errores en el código. |
 | `start` | Inicia el proyecto en el entorno de producción.                 |
 | `check` | Comprueba la validez de los tipos de TypeScript.                |
 
