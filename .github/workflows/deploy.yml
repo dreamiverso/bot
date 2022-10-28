@@ -33,11 +33,3 @@ jobs:
         run: railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Sync commands
-        run: yarn cross-env NODE_ENV=production tsx src/scripts/sync.ts
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-          DISCORD_APPLICATION_ID: ${{ secrets.DISCORD_APPLICATION_ID }}
-          DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
