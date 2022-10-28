@@ -33,3 +33,8 @@ jobs:
         run: railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Prisma
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: yarn prisma migrate deploy
