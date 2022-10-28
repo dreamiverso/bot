@@ -9,7 +9,10 @@ import {
   searchCollection,
 } from "./subcommands"
 
+import { getContentKind, CONTENT_KIND } from "./utils"
+
 export const choices = [
+  { name: "Cualquier cosa", value: "all" },
   { name: "Usuario", value: "users" },
   { name: "Sueño", value: "dreams" },
   { name: "Escena", value: "scenes" },
@@ -50,16 +53,25 @@ export default createCommand(builder, (interaction) => {
     })
   }
 
-  switch (type) {
-    case "users":
-      return searchUser(interaction)
-    case "dreams":
-    case "scenes":
-    case "elements":
+  const term = interaction.options.getString("término")
+
+  if (!term) {
+    return interaction.reply({
+      content: "¡Debes escoger un usuario!",
+      ephemeral: true,
+    })
+  }
+
+  const kind = getContentKind(term)
+
+  switch (kind) {
+    case CONTENT_KIND.DREAM:
+    case CONTENT_KIND.SCENE:
+    case CONTENT_KIND.ELEMENT:
       return searchContent(interaction)
-    case "collections":
+    case CONTENT_KIND.COLLECTION:
       return searchCollection(interaction)
-    default:
-      throw Error(`Unhandled search type: ${type}`)
+    case CONTENT_KIND.USER:
+      return searchUser(interaction)
   }
 })

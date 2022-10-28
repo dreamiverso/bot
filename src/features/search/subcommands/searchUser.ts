@@ -1,5 +1,6 @@
 import got from "got"
 import { Window } from "happy-dom"
+import { decode } from "html-entities"
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -37,7 +38,7 @@ export async function searchUser(interaction: CommandInteraction) {
     const personas = window.document.querySelectorAll(".persona")
 
     const [level, primaryAura, secondaryAura] = Array.from(personas).map(
-      (element) => element.textContent
+      (element) => decode(element.textContent)
     )
 
     const levelField = level && {
@@ -55,7 +56,7 @@ export async function searchUser(interaction: CommandInteraction) {
       .setImage(avatar)
       .addFields({
         name: "Nombre de usuario",
-        value: term,
+        value: decode(term),
       })
 
     if (levelField) embed.addFields(levelField)

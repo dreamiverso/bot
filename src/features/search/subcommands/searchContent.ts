@@ -1,5 +1,6 @@
 import got from "got"
 import { Window } from "happy-dom"
+import { decode } from "html-entities"
 import { parseSrcset } from "srcset"
 import {
   ActionRowBuilder,
@@ -21,7 +22,7 @@ export async function searchContent(interaction: CommandInteraction) {
 
   if (!term) {
     return interaction.reply({
-      content: "¡Debes escoger un usuario!",
+      content: "¡Debes escoger un término!",
       ephemeral: true,
     })
   }
@@ -50,11 +51,11 @@ export async function searchContent(interaction: CommandInteraction) {
       .addFields(
         {
           name: "Nombre",
-          value: title,
+          value: decode(title),
         },
         {
           name: "Descripción",
-          value: descr,
+          value: decode(descr),
         }
       )
 

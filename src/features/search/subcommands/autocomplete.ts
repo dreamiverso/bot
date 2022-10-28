@@ -1,11 +1,16 @@
 import got from "got"
 import { Window } from "happy-dom"
+import { decode } from "html-entities"
 import { AutocompleteInteraction } from "discord.js"
 
 import { Choice } from "../command.search"
 
 function getUrl(query: string, type: Choice) {
-  return `https://indreams.me/search/results/?term=${query}&type=${type}&sort=recommended`
+  const url = new URL("https://indreams.me/search/results/")
+  if (query) url.searchParams.set("term", query)
+  if (type && type !== "all") url.searchParams.set("type", type)
+  url.searchParams.set("sort", "recommended")
+  return url.toString()
 }
 
 const window = new Window()
@@ -15,7 +20,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
   const type = interaction.options.getString("tipo") as Choice | null
 
-  if (!type) throw Error("missing type")
+  if (!type) return
 
   const value = interaction.options.getFocused()
   const url = getUrl(value, type)
@@ -28,7 +33,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   if (!elements.length) return interaction.respond([])
 
   const options = elements.map((element) => {
-    const name = element.querySelector("h4").textContent
+    const name = decode(element.querySelector("h4").textContent)
     const value = element.querySelector("a").getAttribute("href").substring(1)
     return { name, value }
   })
