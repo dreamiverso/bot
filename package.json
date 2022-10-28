@@ -2,19 +2,14 @@
   "name": "dreamiverso-bot",
   "version": "2.0.0",
   "private": false,
-  "main": "dist/index.js",
   "author": "Dreamiverso",
   "description": "El bot oficial del Dreamiverso",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
     "sync": "cross-env NODE_ENV=development tsx src/scripts/sync.ts",
     "lint": "eslint src --max-warnings=0",
-    "build:db": "prisma generate",
-    "build:ts": "tsc",
-    "build": "yarn run-p build:*",
-    "start": "cross-env NODE_ENV=production node .",
+    "start": "cross-env NODE_ENV=production tsx src/index.ts",
     "check": "tsc --noEmit"
   },
   "dependencies": {

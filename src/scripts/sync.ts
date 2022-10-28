@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import { REST, Routes } from "discord.js"
-import { fileURLToPath } from "url"
 import path from "path"
 import glob from "fast-glob"
 
 import { CreateCommandResult, env } from "~/utils"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 const featuresRoute = path.join(__dirname, "../features")
 const commandsFiles = glob.sync(`${featuresRoute}/**/command.*.ts`)

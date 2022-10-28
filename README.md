@@ -14,12 +14,11 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 
 | Comando | Desscripción                                                    |
 | ------- | --------------------------------------------------------------- |
-| `dev`   | Inicia el proyecto en modo desarrollo.                          |
-| `lint`  | Ejecuta ESLint para formatear y solventar errores en el código. |
-| `build` | Crea una versión de producción para ejecutar en local.          |
-| `start` | Inicia una versión de producción generada previamente.          |
-| `check` | Comprueba la validez de los tipos de TypeScript.                |
+| `dev`   | Inicia el proyecto en el entorno de desarrollo.                 |
 | `sync`  | Sincroniza los comandos del bot con la API de Discord.          |
+| `lint`  | Ejecuta ESLint para formatear y solventar errores en el código. |
+| `start` | Inicia el proyecto en el entorno de producción.                 |
+| `check` | Comprueba la validez de los tipos de TypeScript.                |
 
 ## Workflows
 
