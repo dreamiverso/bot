@@ -1,10 +1,21 @@
 import { config } from "dotenv"
+import { join } from "path"
 import { z } from "zod"
 
-config()
+console.log(
+  "loading .env file:",
+  join(__dirname, "../../", `.env.${process.env.NODE_ENV}`)
+)
+
+config({
+  path: join(__dirname, "../../", `.env.${process.env.NODE_ENV}`),
+})
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "production"]),
+  /**
+   * A connection ID for a local postgresqsl database
+   */
   DATABASE_URL: z.string().min(1),
   /**
    * Usually referred to as `token` on Discord documentation

@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
-    "sync": "cross-env NODE_ENV=production tsx src/scripts/sync.ts",
+    "sync": "cross-env NODE_ENV=development tsx src/scripts/sync.ts",
     "lint": "eslint --fix",
     "build:db": "prisma generate",
     "build:ts": "tsc",
@@ -50,13 +50,5 @@
   },
   "prisma": {
     "schema": "src/db/schema.prisma"
-  },
-  "lint-staged": {
-    "*.ts": "eslint --fix"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
   }
 }

@@ -41,7 +41,7 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 
 4. Crea una aplicación de bot desde el [portal de desarrolladores de Discord](https://discord.com/developers/applications).
 
-5. Clona el respositorio y crea un archivo `.env` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
+5. Clona el respositorio y crea un archivo `.env.development` en la raíz del proyecto con las variables de entorno necesarias. [Puedes consultarlas aquí](#variables-de-entorno).
 
 ```zsh
   touch .env
@@ -58,13 +58,6 @@ El código fuente del bot del [servidor de Discord del Dreamiverso](https://disc
 ```zsh
   npm run dev
 ```
-
-## Ramas y deployments
-
-Este proyecto consta de dos ramas principales:
-
-- `main` → Rama principal de desarrollo
-- `prod` → Rama de producción integrada en el proceso de CI/CD
 
 ## Estructura
 
@@ -251,7 +244,7 @@ import { env, constants } from "~/utils"
 
 ## Variables de entorno
 
-El proyecto requiere un archivo `.env` para funcionar correctamente. Puedes clonar el archivo `.env.template` y rellenarlo con las variables necesarias.
+El proyecto requiere un archivo `.env.development` para funcionar correctamente. Puedes clonar el archivo `.env.template` y rellenarlo con las variables necesarias.
 
 | Variable                 |  Valor   | Descripción                                                                                                                                                                                     |
 | ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
