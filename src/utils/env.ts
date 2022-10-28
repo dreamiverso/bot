@@ -1,14 +1,13 @@
+import path from "path"
 import { config } from "dotenv"
-import { join } from "path"
+import { fileURLToPath } from "url"
 import { z } from "zod"
 
-console.log(
-  "loading .env file:",
-  join(__dirname, "../../", `.env.${process.env.NODE_ENV}`)
-)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 config({
-  path: join(__dirname, "../../", `.env.${process.env.NODE_ENV}`),
+  path: path.join(__dirname, "../../", `.env.${process.env.NODE_ENV}`),
 })
 
 const schema = z.object({

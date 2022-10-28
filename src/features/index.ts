@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import { Client } from "discord.js"
+import { fileURLToPath } from "url"
+import path from "path"
 import glob from "fast-glob"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 import {
   constants,
@@ -27,9 +32,9 @@ async function readContent<T>(
 ) {
   const files = await glob(`${__dirname}/**/${kind}.*.ts`)
 
-  files.forEach((file) => {
-    const content: T = require(file).default
-    if (content) return callback(content)
+  files.forEach(async (file) => {
+    const content = await import(file)
+    if (content?.default) return callback(content.default as T)
   })
 }
 

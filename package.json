@@ -6,6 +6,7 @@
   "author": "Dreamiverso",
   "description": "El bot oficial del Dreamiverso",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
     "sync": "cross-env NODE_ENV=development tsx src/scripts/sync.ts",
