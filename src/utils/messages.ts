@@ -1,4 +1,9 @@
-import { Client, Message, MessagePayload, MessageOptions } from "discord.js"
+import {
+  Client,
+  Message,
+  MessagePayload,
+  MessageCreateOptions,
+} from "discord.js"
 
 import { CHANNEL_ID } from "./constants"
 
@@ -35,7 +40,7 @@ export async function getAllChannelMessages(client: Client, id: CHANNEL_ID) {
 export async function sendMessageToChannel(
   client: Client,
   id: CHANNEL_ID,
-  message: string | MessagePayload | MessageOptions
+  message: string | MessagePayload | MessageCreateOptions
 ) {
   const channel = client.channels.cache.find((channel) => channel.id === id)
 

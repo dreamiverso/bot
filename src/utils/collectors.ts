@@ -32,7 +32,9 @@ export async function collectComponentInteraction<
       interaction.channel.createMessageComponentCollector<T>(options)
 
     collector.on("collect", async (i) => {
+      // @ts-expect-error I don't know anymore, sorry
       if (i.user.id !== interaction.user.id) return
+      // @ts-expect-error I don't know anymore, sorry
       if (!options.ids.includes(i.customId)) return
       // @ts-expect-error I don't know anymore, sorry
       return resolve(i)
@@ -40,7 +42,9 @@ export async function collectComponentInteraction<
 
     collector.on("end", (interactions) => {
       const collected = interactions.some((i) => {
+        // @ts-expect-error I don't know anymore, sorry
         if (i.user.id !== interaction.user.id) return false
+        // @ts-expect-error I don't know anymore, sorry
         if (!options.ids.includes(i.customId)) return false
         return true
       })
