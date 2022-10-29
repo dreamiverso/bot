@@ -1,4 +1,5 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
+import dayjs from "dayjs"
 
 import { env, sendMessageToChannel, constants } from "~/utils"
 import { bootstrap } from "~/features"
@@ -41,10 +42,12 @@ client.once("ready", async (client) => {
 
   if (env.NODE_ENV !== "production") return
 
+  const date = dayjs().format("DD/MM/YYYY HH:mm:ss")
+
   sendMessageToChannel(
     client,
     constants.CHANNEL_ID.BOT_DEBUG,
-    `Nueva conexión (${new Date().toISOString()})`
+    `Nueva conexión (${date})`
   )
 })
 

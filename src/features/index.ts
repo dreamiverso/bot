@@ -115,12 +115,4 @@ export async function bootstrap(client: Client<true>) {
 
   initHandlers(client)
   initInteractions(client)
-
-  if (env.NODE_ENV !== "production") return
-
-  sendMessageToChannel(
-    client,
-    constants.CHANNEL_ID.BOT_DEBUG,
-    `Acaban de enchufarme (${new Date().toISOString()})`
-  )
 }
