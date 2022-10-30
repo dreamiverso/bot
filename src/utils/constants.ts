@@ -18,7 +18,7 @@ export const CHANNEL_ID =
         MODS: "",
         BOT_DEBUG: "",
         PROJECTS_GUIDE: "",
-        WELCOME: "1036283648720257144",
+        WELCOME: "",
       } as const)
 
 export type CHANNEL_ID = Values<typeof CHANNEL_ID>
