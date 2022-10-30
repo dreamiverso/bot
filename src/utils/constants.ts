@@ -10,6 +10,7 @@ export const CHANNEL_ID =
         MODS: "1010917282987397160",
         BOT_DEBUG: "1022195706037018725",
         PROJECTS_GUIDE: "1030543854149046333",
+        WELCOME: "1036283648720257144",
       } as const)
     : ({
         GENERAL: "",
@@ -17,6 +18,7 @@ export const CHANNEL_ID =
         MODS: "",
         BOT_DEBUG: "",
         PROJECTS_GUIDE: "",
+        WELCOME: "1036283648720257144",
       } as const)
 
 export type CHANNEL_ID = Values<typeof CHANNEL_ID>
