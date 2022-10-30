@@ -44,8 +44,16 @@ export default createCommand(builder, (interaction) => {
     (channel) => channel.id === constants.CHANNEL_ID.PROJECTS_GUIDE
   )
 
+  const welcomeChannel = interaction.guild?.channels.cache.find(
+    (channel) => channel.id === constants.CHANNEL_ID.WELCOME
+  )
+
   if (!guideChannel) {
     throw Error("Could not find projects guide channel")
+  }
+
+  if (!welcomeChannel) {
+    throw Error("Could not find welcome channel")
   }
 
   const projectsDescription = oneLine`
@@ -54,7 +62,7 @@ export default createCommand(builder, (interaction) => {
   `
 
   const moreInfoDescription = oneLine`
-    Dispones de más información sobre el servidor y el bot en #bienvenida.
+    Dispones de más información sobre el servidor y el bot en el canal ${welcomeChannel}.
   `
 
   const embed = new EmbedBuilder()
