@@ -16,7 +16,7 @@ server.register(fastifyStatic, {
   prefix: "/public/",
 })
 
-server.listen({ port: 3000 }, (err) => {
+server.listen({ port: parseInt(process.env.PORT || "3000") }, (err) => {
   if (err) throw err
 })
 
