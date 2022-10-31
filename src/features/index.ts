@@ -4,13 +4,10 @@ import { Client } from "discord.js"
 import glob from "fast-glob"
 
 import {
-  constants,
   CreateCommandResult,
   CreateComponentResult,
   CreateHandlerResult,
-  env,
   notifyError,
-  sendMessageToChannel,
 } from "~/utils"
 
 const componentsMap = new Map<string, CreateComponentResult["handler"]>()
