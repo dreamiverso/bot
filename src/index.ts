@@ -16,11 +16,11 @@ server.register(fastifyStatic, {
   prefix: "/public/",
 })
 
-console.log(process.env.PORT || "no port")
-
 server.listen({ port: parseInt(process.env.PORT || "3000") }, (err) => {
   if (err) throw err
 })
+
+console.log(server.printRoutes())
 
 export const client = new Client({
   intents: [
