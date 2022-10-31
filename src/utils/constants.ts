@@ -1,9 +1,7 @@
-import { env } from "~/utils"
-
 type Values<T extends Record<string, unknown>> = T[keyof T]
 
 export const CHANNEL_ID =
-  env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development"
     ? ({
         GENERAL: "1006996010142289922",
         NICKNAMES: "1007016335261315213",
@@ -24,7 +22,7 @@ export const CHANNEL_ID =
 export type CHANNEL_ID = Values<typeof CHANNEL_ID>
 
 export const CATEGORY_ID =
-  env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development"
     ? ({
         PROJECTS: "1027700509324365856",
       } as const)
