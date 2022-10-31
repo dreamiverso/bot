@@ -1,9 +1,24 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
+import dayjs from "dayjs"
+import path from "path"
+import fastify from "fastify"
+import fastifyStatic from "@fastify/static"
 
 import { env, sendMessageToChannel, constants } from "~/utils"
 import { bootstrap } from "~/features"
 
 console.log("⏳  Creating new client…")
+
+export const server = fastify()
+
+server.register(fastifyStatic, {
+  root: path.join(__dirname, "..", "public"),
+  prefix: "/public/",
+})
+
+server.listen({ port: 3000 }, (err) => {
+  if (err) throw err
+})
 
 export const client = new Client({
   intents: [
@@ -41,10 +56,12 @@ client.once("ready", async (client) => {
 
   if (env.NODE_ENV !== "production") return
 
+  const date = dayjs().format("DD/MM/YYYY HH:mm:ss")
+
   sendMessageToChannel(
     client,
     constants.CHANNEL_ID.BOT_DEBUG,
-    `Nueva conexión (${new Date().toISOString()})`
+    `Nueva conexión (${date})`
   )
 })
 

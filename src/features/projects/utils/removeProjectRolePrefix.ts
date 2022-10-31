@@ -1,4 +1,4 @@
-export const projectRolePrefix = new RegExp(/(P[0-9]+) - /)
+export const projectRolePrefix = /(P[0-9]+) - /
 
 export function removeProjectRolePrefix(string: string) {
   if (!projectRolePrefix.test(string)) {
