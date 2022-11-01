@@ -18,11 +18,11 @@ const DESCRIPTION = oneLine`
 const FOOTER = "¡Beep, boop! Servicio de notificaciones"
 
 const MILESTONE_GIFS = {
-  100: "https://raw.githubusercontent.com/Alados5/discord-dreamsbot/master/media/milestone100gif.gif",
-  200: "https://raw.githubusercontent.com/Alados5/discord-dreamsbot/master/media/milestone100gif.gif",
-  300: "https://raw.githubusercontent.com/Alados5/discord-dreamsbot/master/media/milestone100gif.gif",
-  400: "https://raw.githubusercontent.com/Alados5/discord-dreamsbot/master/media/milestone100gif.gif",
-  500: "https://raw.githubusercontent.com/Alados5/discord-dreamsbot/master/media/milestone100gif.gif",
+  100: image("milestone100gif.gif"),
+  200: image("milestone100gif.gif"),
+  300: image("milestone100gif.gif"),
+  400: image("milestone100gif.gif"),
+  500: image("milestone100gif.gif"),
 } as const
 
 type Milestone = keyof typeof MILESTONE_GIFS
@@ -62,7 +62,7 @@ export default createHandler("guildMemberAdd", async (guildMember) => {
   // Send an extra celebration message every 100 new users
   if (count % 100 !== 0) return
 
-  const gif = MILESTONE_GIFS[(Math.floor(count / 100) * 100) as Milestone]
+  const gif = await MILESTONE_GIFS[(Math.floor(count / 100) * 100) as Milestone]
 
   // prettier-ignore
   const message = oneLine`
