@@ -5,7 +5,7 @@ const whitespaces = /[\p{Z}\s]+/giu
  * Parses a string to match Discord's channel format
  *
  * ```ts
- * formatChannelName(¿Cuándo sale Starfarmer™?) // cuándo-sale-starfarmer
+ * formatChannelName(¿Cuándo sale Starfarmer™?) // cuándo_sale_starfarmer
  *
  * ```
  */
@@ -13,6 +13,6 @@ export function formatChannelName(name: string) {
   return name
     .replace(invalidChannelNameCharacters, "")
     .trim()
-    .replace(whitespaces, "-")
+    .replace(whitespaces, "_")
     .toLocaleLowerCase()
 }
