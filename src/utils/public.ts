@@ -13,9 +13,9 @@ async function getGitBranch() {
 
 export async function image(name: `${string}.${string}`) {
   if (env.NODE_ENV === "production") {
-    return `raw.githubusercontent.com/dreamiverso/bot/main/public/${name}`
+    return `https://raw.githubusercontent.com/dreamiverso/bot/main/public/${name}`
   }
 
   const gitBranch = await getGitBranch()
-  return `raw.githubusercontent.com/dreamiverso/bot/${gitBranch}/public/${name}`
+  return `https://raw.githubusercontent.com/dreamiverso/bot/${gitBranch}/public/${name}`
 }

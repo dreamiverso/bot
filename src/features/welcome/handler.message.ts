@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js"
 import { oneLine } from "common-tags"
 
-import { constants, createHandler } from "~/utils"
+import { constants, createHandler, image } from "~/utils"
 
 const TITLE = "¡Bienvenid@ al Dreamiverso!"
 
@@ -40,10 +40,13 @@ export default createHandler("guildMemberAdd", async (guildMember) => {
   if (!generalChannel) return
   if (!generalChannel.isTextBased()) return
 
+  const banner = await image("welcome-banner.png")
+
   const embed = new EmbedBuilder()
     .setColor(0x8000ff)
     .setTitle(TITLE)
     .setDescription(DESCRIPTION)
+    .setImage(banner)
     .setThumbnail(guildMember.user.avatarURL())
     .setFooter({
       text: FOOTER,
