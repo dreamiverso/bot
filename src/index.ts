@@ -1,26 +1,10 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js"
 import dayjs from "dayjs"
-import path from "path"
-import fastify from "fastify"
-import fastifyStatic from "@fastify/static"
 
 import { env, sendMessageToChannel, constants } from "~/utils"
 import { bootstrap } from "~/features"
 
 console.log("⏳  Creating new client…")
-
-export const server = fastify()
-
-server.register(fastifyStatic, {
-  root: path.join(__dirname, "..", "public"),
-  prefix: "/public/",
-})
-
-server.listen({ port: parseInt(process.env.PORT || "3000") }, (err) => {
-  if (err) throw err
-})
-
-console.log(server.printRoutes())
 
 export const client = new Client({
   intents: [

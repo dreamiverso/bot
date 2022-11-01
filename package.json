@@ -13,13 +13,11 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fastify/static": "^6.5.0",
     "@prisma/client": "^4.5.0",
     "common-tags": "^1.8.2",
     "dayjs": "^1.11.6",
     "discord.js": "^14.6.0",
     "fast-glob": "^3.2.12",
-    "fastify": "^4.9.2",
     "got": "^12.5.2",
     "happy-dom": "^7.6.6",
     "html-entities": "^2.3.3",
