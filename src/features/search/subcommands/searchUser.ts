@@ -26,8 +26,9 @@ export async function searchUser(interaction: CommandInteraction) {
     })
   }
 
+  const url = `https://indreams.me/${term}`
+
   try {
-    const url = `https://indreams.me/${term}`
     const data = await got(url, { headers: { cookie: "Locale=es_ES" } }).text()
     window.document.body.innerHTML = data
 
@@ -79,7 +80,7 @@ export async function searchUser(interaction: CommandInteraction) {
   } catch (error) {
     return interaction.reply({
       ephemeral: true,
-      content: `¡Ups! No hemos podido encontrar el usuario ${term} 🤔`,
+      content: `¡Ups! No he podido encontrar eso… 🤔 Prueba visitando la url: ${url}`,
     })
   }
 }
